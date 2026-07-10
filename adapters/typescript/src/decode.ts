@@ -5,7 +5,7 @@
 
 import { hexEncode } from "./util.ts";
 import { f16BitsToDouble, doubleToF16Bits } from "./float16.ts";
-import { encodeRfc8949, EncodeError } from "./rfc8949.ts";
+import { encodeRfc8949, EncodeError, compareBytesUnsigned } from "./rfc8949.ts";
 import { encodeDcbor } from "./dcbor.ts";
 import type { LogicalValue } from "./logicalValue.ts";
 
@@ -246,7 +246,7 @@ function parseItem(input: Uint8Array, cursor: Cursor, profile: Profile): Item {
       for (let i = 0; i < keyRanges.length - 1; i++) {
         const a = input.slice(keyRanges[i][0], keyRanges[i][1]);
         const b = input.slice(keyRanges[i + 1][0], keyRanges[i + 1][1]);
-        const cmp = compareBytesUnsignedLocal(a, b);
+        const cmp = compareBytesUnsigned(a, b);
         if (cmp === 0) throw new DecodeException("DUPLICATE_KEY");
         if (cmp > 0) throw new DecodeException("UNSORTED_MAP_KEYS");
       }
@@ -261,14 +261,6 @@ function parseItem(input: Uint8Array, cursor: Cursor, profile: Profile): Item {
     default:
       throw new Error("major type is 3 bits, always 0-7");
   }
-}
-
-function compareBytesUnsignedLocal(a: Uint8Array, b: Uint8Array): number {
-  const len = Math.min(a.length, b.length);
-  for (let i = 0; i < len; i++) {
-    if (a[i] !== b[i]) return a[i] - b[i];
-  }
-  return a.length - b.length;
 }
 
 type FloatWidth = "F16" | "F32" | "F64";
