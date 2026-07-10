@@ -11,4 +11,5 @@ adapters/rust/fuzz/corpus/
 adapters/kotlin/build/
 adapters/kotlin/.gradle/
 adapters/kotlin/.kotlin/
+adapters/typescript/node_modules/
 docs/superpowers/

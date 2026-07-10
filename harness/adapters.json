@@ -9,6 +9,11 @@
       "name": "kotlin",
       "binary": "adapters/kotlin/build/install/adapter/bin/adapter",
       "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "typescript",
+      "binary": "adapters/typescript/src/main.ts",
+      "profiles": ["rfc8949", "dcbor"]
     }
   ]
 }
