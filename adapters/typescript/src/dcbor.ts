@@ -11,24 +11,13 @@ import {
   compareBytesUnsigned,
   bignumTagAndBytes,
   doubleToBeBytes,
+  concatBytes,
+  TWO_POW_64,
   EncodeError,
 } from "./rfc8949.ts";
 import type { LogicalValue } from "./logicalValue.ts";
 
 export { EncodeError };
-
-const TWO_POW_64 = 1n << 64n;
-
-function concatBytes(...parts: Uint8Array[]): Uint8Array {
-  const total = parts.reduce((sum, p) => sum + p.length, 0);
-  const out = new Uint8Array(total);
-  let offset = 0;
-  for (const p of parts) {
-    out.set(p, offset);
-    offset += p.length;
-  }
-  return out;
-}
 
 function encodeFloatDcbor(literal: string): Uint8Array {
   const f = Number(literal);

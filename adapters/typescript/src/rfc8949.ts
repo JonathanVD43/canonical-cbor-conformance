@@ -14,7 +14,7 @@ export class EncodeError extends Error {
   }
 }
 
-const TWO_POW_64 = 1n << 64n;
+export const TWO_POW_64 = 1n << 64n;
 
 /** Convert a non-negative bigint magnitude to a big-endian byte array of exactly `width` bytes. */
 function bigIntToBytes(v: bigint, width: number): Uint8Array {
@@ -35,7 +35,7 @@ function bigIntToMinimalBytes(v: bigint): Uint8Array {
   return hexDecode(hex);
 }
 
-function concatBytes(...parts: Uint8Array[]): Uint8Array {
+export function concatBytes(...parts: Uint8Array[]): Uint8Array {
   const total = parts.reduce((sum, p) => sum + p.length, 0);
   const out = new Uint8Array(total);
   let offset = 0;

@@ -8,7 +8,7 @@ as this project's third reference adapter (`ARCHITECTURE.md` §2/§9).
 ## No build step
 
 There is no `dist/`, no bundler, no transpile-then-run pipeline. Node
-(v22.6+/23+, the version already required by this project's `node --test
+(v22.18+/23.6+ (or later), the version already required by this project's `node --test
 src/*.test.ts` unit tests) strips TypeScript types and runs `.ts` files
 directly. `adapters/typescript/src/main.ts` carries a `#!/usr/bin/env node`
 shebang and is executable (`chmod +x`), so the harness's

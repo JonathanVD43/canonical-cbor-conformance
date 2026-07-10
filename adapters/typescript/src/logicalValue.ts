@@ -122,9 +122,9 @@ function parseLogicalValue(json: any): LogicalValue {
 
   switch (type) {
     case "int":
-      return parseInt(json);
+      return parseIntValue(json);
     case "float":
-      return parseFloat(json);
+      return parseFloatValue(json);
     case "text":
       return parseText(json);
     case "bytes":
@@ -146,7 +146,7 @@ function parseLogicalValue(json: any): LogicalValue {
   }
 }
 
-function parseInt(json: any): IntValue {
+function parseIntValue(json: any): IntValue {
   const value = json.value;
   if (typeof value !== "string") {
     throw new ParseError('int: missing or invalid "value"');
@@ -154,7 +154,7 @@ function parseInt(json: any): IntValue {
   return { type: "int", value };
 }
 
-function parseFloat(json: any): FloatValue {
+function parseFloatValue(json: any): FloatValue {
   const width = json.width;
   if (!["auto", "f16", "f32", "f64"].includes(width)) {
     throw new ParseError('float: invalid or missing "width"');
