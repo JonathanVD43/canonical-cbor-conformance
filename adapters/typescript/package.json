@@ -1,0 +1,14 @@
+{
+  "type": "module",
+  "name": "canonical-cbor-conformance-typescript-adapter",
+  "version": "0.1.0",
+  "description": "TypeScript reference adapter for canonical CBOR conformance test suite",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
