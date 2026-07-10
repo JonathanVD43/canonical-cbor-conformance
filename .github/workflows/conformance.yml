@@ -1,0 +1,47 @@
+name: Conformance
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install harness dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust adapter
+        run: cargo build --release
+        working-directory: adapters/rust
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Build Kotlin adapter
+        run: ./gradlew installDist --no-daemon
+        working-directory: adapters/kotlin
+
+      - name: Run conformance harness
+        run: python3 harness/run.py
+
+      - name: Upload harness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-report
+          path: harness/report/latest.json

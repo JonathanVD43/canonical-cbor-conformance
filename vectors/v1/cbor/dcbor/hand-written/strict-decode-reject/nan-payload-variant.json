@@ -1,0 +1,10 @@
+[
+  {
+    "id": "nan-payload-variant-f16",
+    "rule": "NAN_PAYLOAD_VARIANT",
+    "rationale": "A half-precision NaN encoded with mantissa payload 0x01 (0xf9 0x7e 0x01) instead of the single canonical all-zero-mantissa payload (0xf9 0x7e 0x00). Well-formed IEEE-754 NaN, but violates the canonical-NaN-payload rule (P6/D6).",
+    "input_hex": "f97e01",
+    "expected_verdict": "reject",
+    "expected_reason": "NAN_PAYLOAD_VARIANT"
+  }
+]

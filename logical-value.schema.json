@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://canonical-cbor-conformance/logical-value.schema.json",
+  "title": "Logical Value",
+  "description": "Shared adapter-input grammar for the canonical CBOR conformance suite. Every vector file's logical values must validate against this schema.",
+  "$ref": "#/$defs/logicalValue",
+  "$defs": {
+    "logicalValue": {
+      "oneOf": [
+        { "$ref": "#/$defs/intValue" },
+        { "$ref": "#/$defs/floatValue" },
+        { "$ref": "#/$defs/textValue" },
+        { "$ref": "#/$defs/bytesValue" },
+        { "$ref": "#/$defs/boolValue" },
+        { "$ref": "#/$defs/nullValue" },
+        { "$ref": "#/$defs/arrayValue" },
+        { "$ref": "#/$defs/mapValue" },
+        { "$ref": "#/$defs/tagValue" },
+        { "$ref": "#/$defs/bignumValue" }
+      ]
+    },
+    "intValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "int" },
+        "value": { "type": "string", "pattern": "^-?[0-9]+$" }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "floatValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "float" },
+        "width": { "enum": ["auto", "f16", "f32", "f64"] },
+        "value": {
+          "type": "string",
+          "description": "Decimal float literal, or one of NaN / Infinity / -Infinity / -0.0 / 0.0"
+        }
+      },
+      "required": ["type", "width", "value"],
+      "additionalProperties": false
+    },
+    "textValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "text" },
+        "value": { "type": "string" }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "bytesValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "bytes" },
+        "value": { "type": "string", "pattern": "^([0-9a-f]{2})*$" }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "boolValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "bool" },
+        "value": { "type": "boolean" }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "nullValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "null" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "arrayValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "array" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/logicalValue" } }
+      },
+      "required": ["type", "items"],
+      "additionalProperties": false
+    },
+    "mapValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "map" },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              { "$ref": "#/$defs/logicalValue" },
+              { "$ref": "#/$defs/logicalValue" }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "required": ["type", "entries"],
+      "additionalProperties": false
+    },
+    "tagValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "tag" },
+        "tag": { "type": "integer", "minimum": 0 },
+        "value": { "$ref": "#/$defs/logicalValue" }
+      },
+      "required": ["type", "tag", "value"],
+      "additionalProperties": false
+    },
+    "bignumValue": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "bignum" },
+        "sign": { "enum": ["positive", "negative"] },
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "Decimal magnitude, must be >= 2^64 (values below that range must use the int type instead, per the project's bignum rule in SPEC.md)"
+        }
+      },
+      "required": ["type", "sign", "value"],
+      "additionalProperties": false
+    }
+  }
+}

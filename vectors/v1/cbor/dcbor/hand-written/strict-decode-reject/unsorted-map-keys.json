@@ -1,0 +1,10 @@
+[
+  {
+    "id": "unsorted-map-keys-1-before-0",
+    "rule": "UNSORTED_MAP_KEYS",
+    "rationale": "Map {1: 0, 0: 0} encoded with key 1 before key 0. Canonical order requires bytewise-ascending order of each key's own encoded form, so key 0 (encoded 0x00) must precede key 1 (encoded 0x01). Well-formed, but violates map-key ordering (P2/D3).",
+    "input_hex": "a201000000",
+    "expected_verdict": "reject",
+    "expected_reason": "UNSORTED_MAP_KEYS"
+  }
+]

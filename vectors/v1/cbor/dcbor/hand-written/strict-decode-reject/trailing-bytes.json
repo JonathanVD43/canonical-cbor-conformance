@@ -1,0 +1,10 @@
+[
+  {
+    "id": "trailing-bytes-incomplete-head",
+    "rule": "TRAILING_BYTES",
+    "rationale": "A complete top-level item (int 0, 0x00) followed by a stray trailing byte (0x18) that is itself only a CBOR item *header* announcing one more length byte to follow, which never arrives. Distinguished from MULTIPLE_TOP_LEVEL_ITEMS: the tail here is not itself a complete second item.",
+    "input_hex": "0018",
+    "expected_verdict": "reject",
+    "expected_reason": "TRAILING_BYTES"
+  }
+]

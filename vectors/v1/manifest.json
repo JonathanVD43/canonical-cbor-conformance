@@ -1,0 +1,62 @@
+{
+  "profile_versions": {
+    "rfc8949": "rfc8949-profile-1",
+    "dcbor": "dcbor-profile-draft-04"
+  },
+  "hand_written_files": {
+    "rfc8949": [
+      "vectors/v1/cbor/rfc8949/hand-written/integers.json",
+      "vectors/v1/cbor/rfc8949/hand-written/floats.json",
+      "vectors/v1/cbor/rfc8949/hand-written/maps-key-order.json",
+      "vectors/v1/cbor/rfc8949/hand-written/bignums.json"
+    ],
+    "dcbor": [
+      "vectors/v1/cbor/dcbor/hand-written/numeric-reduction.json",
+      "vectors/v1/cbor/dcbor/hand-written/zero-unification.json",
+      "vectors/v1/cbor/dcbor/hand-written/nfc-normalization.json",
+      "vectors/v1/cbor/dcbor/hand-written/maps-key-order.json"
+    ]
+  },
+  "fuzz_generated_files": {
+    "rfc8949": [
+      "vectors/v1/cbor/rfc8949/fuzz-generated/vectors.json"
+    ],
+    "dcbor": [
+      "vectors/v1/cbor/dcbor/fuzz-generated/vectors.json"
+    ]
+  },
+  "strict_decode_reject_files": {
+    "rfc8949": [
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/non-shortest-int.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/unsorted-map-keys.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/indefinite-length.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/duplicate-keys.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/non-shortest-float.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/nan-payload-variant.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/trailing-bytes.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/multiple-top-level-items.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/unknown-tag.json"
+    ],
+    "dcbor": [
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/non-shortest-int.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/unsorted-map-keys.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/indefinite-length.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/duplicate-keys.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/non-shortest-float.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/nan-payload-variant.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/trailing-bytes.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/multiple-top-level-items.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/unknown-tag.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/non-nfc-string.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/unreduced-numeric.json"
+    ]
+  },
+  "corpus_stats": {
+    "rfc8949_hand_written_count": 14,
+    "dcbor_hand_written_count": 9,
+    "rfc8949_strict_decode_reject_count": 9,
+    "dcbor_strict_decode_reject_count": 11,
+    "rfc8949_fuzz_generated_count": 5000,
+    "dcbor_fuzz_generated_count": 5000
+  }
+}

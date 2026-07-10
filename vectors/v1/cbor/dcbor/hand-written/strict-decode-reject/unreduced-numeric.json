@@ -1,0 +1,10 @@
+[
+  {
+    "id": "unreduced-numeric-2-0-as-float",
+    "rule": "UNREDUCED_NUMERIC",
+    "rationale": "The value 2.0 (zero fractional part, within dCBOR's D5 reducible range) encoded as an f16 float (0xf9 0x40 0x00) instead of being reduced to the plain integer 2 (0x02). This is distinct from NON_SHORTEST_FLOAT: the float width used (f16) IS already the shortest float form for 2.0 \u2014 the defect is that it should not be a float at all. dcbor-only: rfc8949-profile-1 has no numeric-reduction rule (floats and integers are always distinct types there).",
+    "input_hex": "f94000",
+    "expected_verdict": "reject",
+    "expected_reason": "UNREDUCED_NUMERIC"
+  }
+]

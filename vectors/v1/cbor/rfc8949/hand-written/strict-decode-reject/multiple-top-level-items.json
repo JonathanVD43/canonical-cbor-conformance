@@ -1,0 +1,10 @@
+[
+  {
+    "id": "multiple-top-level-items-two-ints",
+    "rule": "MULTIPLE_TOP_LEVEL_ITEMS",
+    "rationale": "Two complete, individually well-formed CBOR items (int 0, then int 1) concatenated in a single input line. decode-strict mode expects exactly one top-level item per input line.",
+    "input_hex": "0001",
+    "expected_verdict": "reject",
+    "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "non-nfc-string-cafe-combining-accent",
+    "rule": "NON_NFC_STRING",
+    "rationale": "The text \"cafe\\u0301\" (Latin small letter e followed by a combining acute accent, U+0301) encoded as raw UTF-8 without NFC normalization. dCBOR's D8 requires NFC normalization (the precomposed \"caf\\u00e9\" form); rfc8949-profile-1 has no such rule (P9 is an explicit non-goal), so this reason code is dcbor-only.",
+    "input_hex": "6663616665cc81",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_NFC_STRING"
+  }
+]

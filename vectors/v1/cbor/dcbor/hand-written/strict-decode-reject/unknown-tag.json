@@ -1,0 +1,10 @@
+[
+  {
+    "id": "unknown-tag-999",
+    "rule": "UNKNOWN_TAG",
+    "rationale": "Tag 999 (2-byte tag-number form, 0xd9 0x03 0xe7) wrapping int 0. 999 is not among the tags either profile's schema permits (only bignum tags 2/3 are currently in scope). Well-formed, but violates the unknown-tags-are-a-hard-error rule (P8, and dCBOR's equivalent restriction).",
+    "input_hex": "d903e700",
+    "expected_verdict": "reject",
+    "expected_reason": "UNKNOWN_TAG"
+  }
+]

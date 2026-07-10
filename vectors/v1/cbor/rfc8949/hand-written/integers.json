@@ -1,0 +1,72 @@
+[
+  {
+    "id": "int-zero",
+    "rule": "P1",
+    "rationale": "zero is the base case for shortest-int encoding",
+    "logical_value": {
+      "type": "int",
+      "value": "0"
+    },
+    "expected_hex": "00"
+  },
+  {
+    "id": "int-23",
+    "rule": "P1",
+    "rationale": "largest value encodable in the 1-byte immediate form",
+    "logical_value": {
+      "type": "int",
+      "value": "23"
+    },
+    "expected_hex": "17"
+  },
+  {
+    "id": "int-24",
+    "rule": "P1",
+    "rationale": "smallest value requiring a 1-byte length extension",
+    "logical_value": {
+      "type": "int",
+      "value": "24"
+    },
+    "expected_hex": "1818"
+  },
+  {
+    "id": "int-255",
+    "rule": "P1",
+    "rationale": "largest value fitting the 1-byte extension",
+    "logical_value": {
+      "type": "int",
+      "value": "255"
+    },
+    "expected_hex": "18ff"
+  },
+  {
+    "id": "int-256",
+    "rule": "P1",
+    "rationale": "smallest value requiring a 2-byte extension",
+    "logical_value": {
+      "type": "int",
+      "value": "256"
+    },
+    "expected_hex": "190100"
+  },
+  {
+    "id": "int-neg-1",
+    "rule": "P1",
+    "rationale": "smallest-magnitude negative integer, major type 1 offset-by-one",
+    "logical_value": {
+      "type": "int",
+      "value": "-1"
+    },
+    "expected_hex": "20"
+  },
+  {
+    "id": "int-min-i64",
+    "rule": "P1",
+    "rationale": "most negative 64-bit integer boundary",
+    "logical_value": {
+      "type": "int",
+      "value": "-9223372036854775808"
+    },
+    "expected_hex": "3b7fffffffffffffff"
+  }
+]

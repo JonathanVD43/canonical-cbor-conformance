@@ -1,0 +1,10 @@
+[
+  {
+    "id": "non-shortest-int-zero",
+    "rule": "NON_SHORTEST_INT",
+    "rationale": "Integer 0 encoded with the 1-byte additional-info form (0x18 0x00) instead of the shortest single-byte form (0x00). Well-formed, but violates shortest-encoding (P1/D2).",
+    "input_hex": "1800",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_INT"
+  }
+]

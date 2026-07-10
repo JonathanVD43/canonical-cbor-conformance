@@ -1,0 +1,13 @@
+[
+  {
+    "id": "bignum-2-pow-64",
+    "rule": "bignum-rule",
+    "rationale": "smallest magnitude that must use tag 2 rather than a plain integer, per SPEC.md's bignum rule",
+    "logical_value": {
+      "type": "bignum",
+      "sign": "positive",
+      "value": "18446744073709551616"
+    },
+    "expected_hex": "c249010000000000000000"
+  }
+]

@@ -1,0 +1,64 @@
+[
+  {
+    "id": "dcbor-map-int-keys-byte-sort",
+    "rule": "D3",
+    "rationale": "keys 9 and 10 sort by their 1-byte encoded form (0x09 < 0x0a), not numeric value -- happens to match numeric order here, the point is D3 sorts by bytes, not value. Mirrors rfc8949's P2, same underlying rule.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [
+          {
+            "type": "int",
+            "value": "9"
+          },
+          {
+            "type": "int",
+            "value": "1"
+          }
+        ],
+        [
+          {
+            "type": "int",
+            "value": "10"
+          },
+          {
+            "type": "int",
+            "value": "2"
+          }
+        ]
+      ]
+    },
+    "expected_hex": "a209010a02"
+  },
+  {
+    "id": "dcbor-map-int-keys-pure-bytewise-no-length-presort",
+    "rule": "D3",
+    "rationale": "-24 encodes to 1 byte (0x37); 1000 encodes to 3 bytes (0x1903e8). D3 requires PURE bytewise order with no length pre-sort: 0x19 < 0x37, so the longer encoding of 1000 must sort before the shorter encoding of -24. A length-first (RFC 7049-style) comparator would wrongly sort -24 first.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [
+          {
+            "type": "int",
+            "value": "-24"
+          },
+          {
+            "type": "int",
+            "value": "1"
+          }
+        ],
+        [
+          {
+            "type": "int",
+            "value": "1000"
+          },
+          {
+            "type": "int",
+            "value": "2"
+          }
+        ]
+      ]
+    },
+    "expected_hex": "a21903e8023701"
+  }
+]

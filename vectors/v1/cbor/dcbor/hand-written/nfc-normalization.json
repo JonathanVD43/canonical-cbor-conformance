@@ -1,0 +1,12 @@
+[
+  {
+    "id": "nfc-combining-accent",
+    "rule": "D8",
+    "rationale": "'cafe' + combining acute accent (U+0301) must normalize to precomposed 'caf\u00e9' (U+00E9)",
+    "logical_value": {
+      "type": "text",
+      "value": "cafe\u0301"
+    },
+    "expected_hex": "65636166c3a9"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://canonical-cbor-conformance/decode-vector.schema.json",
+  "title": "Decode-Strict Reject Vector",
+  "description": "Grammar for vectors/v1/cbor/<profile>/hand-written/strict-decode-reject/*.json files. Each vector is a well-formed but non-canonical raw CBOR byte string that a conformant decode-strict implementation MUST reject with the given reason code (SPEC.md's `decode-strict reason codes` section). Profile applicability is implied by which profile's strict-decode-reject/ directory the file lives in, not by a field in the vector itself — same convention as logical-value.schema.json's encode vectors, which carry no profile field either. The canonical (ACCEPT) side of decode-strict conformance needs no new vectors: every existing hand-written encode vector's expected_hex doubles as a decode-strict ACCEPT input, expected to re-encode byte-identical to itself.",
+  "type": "array",
+  "items": { "$ref": "#/$defs/decodeRejectVector" },
+  "$defs": {
+    "decodeRejectVector": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "rule": {
+          "description": "One of SPEC.md's decode-strict reason codes. NON_SHORTEST_INT, UNSORTED_MAP_KEYS, INDEFINITE_LENGTH, DUPLICATE_KEY, NON_SHORTEST_FLOAT, NAN_PAYLOAD_VARIANT, TRAILING_BYTES, MULTIPLE_TOP_LEVEL_ITEMS, and UNKNOWN_TAG apply to both profiles (each gets a copy of the vector under both profiles' strict-decode-reject/ dirs, since the underlying rule and expected reason code are identical in rfc8949-profile-1 and dcbor-profile-<draft-version>). NON_NFC_STRING and UNREDUCED_NUMERIC are dcbor-only reason codes with no rfc8949 counterpart (rfc8949's P9 explicitly does not normalize string content, and rfc8949 has no numeric-reduction rule at all) — vectors for these two codes exist only under vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/.",
+          "enum": [
+            "NON_SHORTEST_INT",
+            "UNSORTED_MAP_KEYS",
+            "INDEFINITE_LENGTH",
+            "DUPLICATE_KEY",
+            "NON_SHORTEST_FLOAT",
+            "NAN_PAYLOAD_VARIANT",
+            "TRAILING_BYTES",
+            "MULTIPLE_TOP_LEVEL_ITEMS",
+            "UNKNOWN_TAG",
+            "NON_NFC_STRING",
+            "UNREDUCED_NUMERIC"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Why this specific byte sequence is well-formed CBOR yet non-canonical, and why it's a hard/worth-covering case."
+        },
+        "input_hex": {
+          "type": "string",
+          "pattern": "^([0-9a-f]{2})*$",
+          "description": "Well-formed (parseable) raw CBOR bytes that violate exactly one canonicity rule."
+        },
+        "expected_verdict": { "const": "reject" },
+        "expected_reason": {
+          "description": "Must equal `rule` — kept as a separate field because this is the literal value the adapter's decode-strict CLI mode is contracted to print after `REJECT `, whereas `rule` is the vector's category tag (matching the `rule` field's role on encode vectors, e.g. `P6`, `bignum-rule`).",
+          "enum": [
+            "NON_SHORTEST_INT",
+            "UNSORTED_MAP_KEYS",
+            "INDEFINITE_LENGTH",
+            "DUPLICATE_KEY",
+            "NON_SHORTEST_FLOAT",
+            "NAN_PAYLOAD_VARIANT",
+            "TRAILING_BYTES",
+            "MULTIPLE_TOP_LEVEL_ITEMS",
+            "UNKNOWN_TAG",
+            "NON_NFC_STRING",
+            "UNREDUCED_NUMERIC"
+          ]
+        }
+      },
+      "required": ["id", "rule", "rationale", "input_hex", "expected_verdict", "expected_reason"],
+      "additionalProperties": false
+    }
+  }
+}

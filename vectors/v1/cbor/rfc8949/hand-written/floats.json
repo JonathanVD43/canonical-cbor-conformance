@@ -1,0 +1,46 @@
+[
+  {
+    "id": "float-nan",
+    "rule": "P6",
+    "rationale": "NaN must use the single canonical f16 payload 0x7e00",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "NaN"
+    },
+    "expected_hex": "f97e00"
+  },
+  {
+    "id": "float-neg-zero",
+    "rule": "P7",
+    "rationale": "-0.0 must be preserved distinct from 0.0",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "-0.0"
+    },
+    "expected_hex": "f98000"
+  },
+  {
+    "id": "float-pos-zero",
+    "rule": "P7",
+    "rationale": "0.0 is the counterpart -0.0 must stay distinct from",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "0.0"
+    },
+    "expected_hex": "f90000"
+  },
+  {
+    "id": "float-2-5-f16-exact",
+    "rule": "P5",
+    "rationale": "2.5 round-trips exactly in f16, the shortest form",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "2.5"
+    },
+    "expected_hex": "f94100"
+  }
+]

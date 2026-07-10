@@ -1,0 +1,34 @@
+[
+  {
+    "id": "zero-as-int",
+    "rule": "D7",
+    "rationale": "plain integer 0 is the baseline unification target",
+    "logical_value": {
+      "type": "int",
+      "value": "0"
+    },
+    "expected_hex": "00"
+  },
+  {
+    "id": "zero-as-pos-float",
+    "rule": "D7",
+    "rationale": "0.0 must unify with integer 0, unlike rfc8949's P7",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "0.0"
+    },
+    "expected_hex": "00"
+  },
+  {
+    "id": "zero-as-neg-float",
+    "rule": "D7",
+    "rationale": "-0.0 must also unify with integer 0, the opposite of rfc8949's P7",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "-0.0"
+    },
+    "expected_hex": "00"
+  }
+]

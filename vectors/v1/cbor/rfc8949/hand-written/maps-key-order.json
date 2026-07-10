@@ -1,0 +1,64 @@
+[
+  {
+    "id": "map-int-keys-byte-sort",
+    "rule": "P2",
+    "rationale": "keys 9 and 10 sort by their 1-byte encoded form (0x09 < 0x0a), not numeric value -- here they coincide, exercised further by mixed-type cases in a later milestone",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [
+          {
+            "type": "int",
+            "value": "9"
+          },
+          {
+            "type": "int",
+            "value": "1"
+          }
+        ],
+        [
+          {
+            "type": "int",
+            "value": "10"
+          },
+          {
+            "type": "int",
+            "value": "2"
+          }
+        ]
+      ]
+    },
+    "expected_hex": "a209010a02"
+  },
+  {
+    "id": "map-int-keys-pure-bytewise-no-length-presort",
+    "rule": "P2",
+    "rationale": "-24 encodes to 1 byte (0x37); 1000 encodes to 3 bytes (0x1903e8). RFC 8949 SS4.2.1 requires PURE bytewise order with no length pre-sort: 0x19 < 0x37, so the longer encoding of 1000 must sort before the shorter encoding of -24. A length-first (RFC 7049-style) comparator would wrongly sort -24 first, since it mistakes the shorter key for the lexicographically smaller one.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [
+          {
+            "type": "int",
+            "value": "-24"
+          },
+          {
+            "type": "int",
+            "value": "1"
+          }
+        ],
+        [
+          {
+            "type": "int",
+            "value": "1000"
+          },
+          {
+            "type": "int",
+            "value": "2"
+          }
+        ]
+      ]
+    },
+    "expected_hex": "a21903e8023701"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "indefinite-length-array",
+    "rule": "INDEFINITE_LENGTH",
+    "rationale": "Array [0] encoded with the indefinite-length major-type-4 header (0x9f) and a break byte (0xff) instead of the definite-length form (0x81 0x00). Well-formed, but violates the definite-length-only rule (P3/D1).",
+    "input_hex": "9f00ff",
+    "expected_verdict": "reject",
+    "expected_reason": "INDEFINITE_LENGTH"
+  }
+]

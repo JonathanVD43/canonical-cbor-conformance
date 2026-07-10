@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.gem
+oracle/.bundle/
+harness/report/latest.json
+adapters/rust/target/
+adapters/rust/fuzz/target/
+adapters/rust/fuzz/corpus/
+adapters/kotlin/build/
+adapters/kotlin/.gradle/
+adapters/kotlin/.kotlin/
+docs/superpowers/

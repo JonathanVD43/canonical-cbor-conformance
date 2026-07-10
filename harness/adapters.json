@@ -1,0 +1,14 @@
+{
+  "adapters": [
+    {
+      "name": "rust",
+      "binary": "adapters/rust/target/release/adapter",
+      "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "kotlin",
+      "binary": "adapters/kotlin/build/install/adapter/bin/adapter",
+      "profiles": ["rfc8949", "dcbor"]
+    }
+  ]
+}

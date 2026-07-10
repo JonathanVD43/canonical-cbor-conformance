@@ -1,0 +1,10 @@
+[
+  {
+    "id": "duplicate-keys-same-key-twice",
+    "rule": "DUPLICATE_KEY",
+    "rationale": "Map with key 0 appearing twice ({0: 0, 0: 1}). Well-formed (a generic decoder accepts it, typically last-value-wins), but violates the no-duplicate-keys rule (P4/D4).",
+    "input_hex": "a200000001",
+    "expected_verdict": "reject",
+    "expected_reason": "DUPLICATE_KEY"
+  }
+]

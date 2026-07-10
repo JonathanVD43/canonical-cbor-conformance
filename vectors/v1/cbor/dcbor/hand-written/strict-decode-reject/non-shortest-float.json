@@ -1,0 +1,10 @@
+[
+  {
+    "id": "non-shortest-float-2-5-as-f64",
+    "rule": "NON_SHORTEST_FLOAT",
+    "rationale": "The value 2.5 (which has a nonzero fractional part, so it is unaffected by dCBOR's D5 numeric-reduction rule in either profile) encoded as a full f64 (9 bytes) instead of the shortest width that round-trips it exactly, f16 (3 bytes, 0xf9 0x41 0x00). Well-formed, but violates shortest-float-width (P5/D2).",
+    "input_hex": "fb4004000000000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_FLOAT"
+  }
+]

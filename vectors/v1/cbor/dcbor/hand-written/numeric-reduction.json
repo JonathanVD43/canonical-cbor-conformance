@@ -1,0 +1,35 @@
+[
+  {
+    "id": "float-whole-becomes-int",
+    "rule": "D5",
+    "rationale": "2.0 has zero fractional part, must reduce to integer 2",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "2.0"
+    },
+    "expected_hex": "02"
+  },
+  {
+    "id": "float-fraction-stays-float",
+    "rule": "D5",
+    "rationale": "2.5 has a fractional part, must stay a float in shortest form",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "2.5"
+    },
+    "expected_hex": "f94100"
+  },
+  {
+    "id": "float-nan-canonical",
+    "rule": "D6",
+    "rationale": "NaN must use the single canonical f16 payload 0x7e00, same bit pattern as P6",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "NaN"
+    },
+    "expected_hex": "f97e00"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Harness report",
+  "description": "Shape of harness/report/latest.json as emitted by harness/run.py's build_report(). Extended by follow-on milestones with decode-strict/pipeline keys alongside 'encode', not by changing this shape.",
+  "type": "object",
+  "properties": {
+    "adapters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "description": "keyed by profile name (e.g. 'rfc8949', 'dcbor')",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "encode": {
+              "type": "object",
+              "properties": {
+                "by_rule": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "total": { "type": "integer" },
+                      "passed": { "type": "integer" },
+                      "failed_ids": { "type": "array", "items": { "type": "string" } }
+                    },
+                    "required": ["total", "passed", "failed_ids"]
+                  }
+                },
+                "total": { "type": "integer" },
+                "passed": { "type": "integer" }
+              },
+              "required": ["by_rule", "total", "passed"]
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["adapters"]
+}
