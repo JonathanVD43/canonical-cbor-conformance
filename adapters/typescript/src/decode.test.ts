@@ -76,6 +76,21 @@ test("unreducedNumericDcborOnly", () => {
   accept(decodeStrict(hexDecode("f94000"), "rfc8949"), "f94000");
 });
 
+test("negativeZeroFloatPreservesSign", () => {
+  // -0.0 as f16 (P7): formatFloat must emit "-0", not String(-0) === "0", or the
+  // decode -> re-encode round trip would silently collapse -0.0 into +0.0 and
+  // produce f90000 instead of the original f98000. (dcbor rejects all
+  // integral-valued floats via UNREDUCED_NUMERIC, -0.0 included, so this is
+  // rfc8949-only; see unreducedNumericDcborOnly above for that rule.)
+  accept(decodeStrict(hexDecode("f98000"), "rfc8949"), "f98000");
+  reject(decodeStrict(hexDecode("f98000"), "dcbor"), "UNREDUCED_NUMERIC");
+});
+
+test("positiveZeroFloatRoundTrips", () => {
+  // Adjacent case: legitimate +0.0 must not be affected by the -0.0 sign fix.
+  accept(decodeStrict(hexDecode("f90000"), "rfc8949"), "f90000");
+});
+
 // --- Vector-file-derived cases (verbatim hex/reason from vectors/v1/cbor/{rfc8949,dcbor}/hand-written/strict-decode-reject/*.json) ---
 
 test("vector rfc8949 duplicate-keys-same-key-twice", () => {

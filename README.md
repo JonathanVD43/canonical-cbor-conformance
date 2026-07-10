@@ -85,7 +85,7 @@ harness/
   run.py                 # language-agnostic runner: feeds vectors to each adapter, diffs output
   adapters.json          # registered adapters + their binary paths
 .github/workflows/
-  conformance.yml         # CI: builds both adapters, runs the harness, fails on any mismatch
+  conformance.yml         # CI: builds/verifies all three adapters (TS: typecheck+test only), runs the harness, fails on any mismatch
 ```
 
 ## Running the harness
