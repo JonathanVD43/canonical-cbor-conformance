@@ -5,7 +5,7 @@
   "description": "TypeScript reference adapter for canonical CBOR conformance test suite",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/"
+    "test": "node --test src/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
