@@ -345,7 +345,11 @@ function shortestFloatWidth(value: number): FloatWidth {
 }
 
 function formatFloat(value: number): string {
-  return Number.isNaN(value) ? "NaN" : String(value);
+  if (Number.isNaN(value)) return "NaN";
+  // String(-0) === "0" in JS, which would silently drop the sign and
+  // collapse -0.0 into +0.0 on the decode -> re-encode round trip (P7).
+  if (Object.is(value, -0)) return "-0";
+  return String(value);
 }
 
 function itemToLogical(item: Item): LogicalValue {
