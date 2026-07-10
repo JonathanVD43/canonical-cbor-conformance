@@ -36,6 +36,23 @@ jobs:
         run: ./gradlew installDist --no-daemon
         working-directory: adapters/kotlin
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install TypeScript adapter dependencies
+        run: npm ci
+        working-directory: adapters/typescript
+
+      - name: Typecheck TypeScript adapter
+        run: npm run typecheck
+        working-directory: adapters/typescript
+
+      - name: Test TypeScript adapter
+        run: npm test
+        working-directory: adapters/typescript
+
       - name: Run conformance harness
         run: python3 harness/run.py
 

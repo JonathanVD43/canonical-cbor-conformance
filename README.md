@@ -80,6 +80,7 @@ oracle/                 # independent reference encoder, used only to author/che
 adapters/
   rust/                 # reference adapter #1
   kotlin/                # reference adapter #2 (JVM, no Android dependency)
+  typescript/            # reference adapter #3 (Node, no build step)
 harness/
   run.py                 # language-agnostic runner: feeds vectors to each adapter, diffs output
   adapters.json          # registered adapters + their binary paths
@@ -95,6 +96,7 @@ pip install -r requirements.txt
 # build the adapters under test
 (cd adapters/rust && cargo build --release)
 (cd adapters/kotlin && ./gradlew installDist)
+(cd adapters/typescript && npm install)
 
 python3 harness/run.py
 ```
@@ -110,7 +112,7 @@ against the frozen corpus, not an integration project.
 
 ## Status
 
-Both reference adapters (Rust, Kotlin/JVM) pass 100% of the corpus across
+All three reference adapters (Rust, Kotlin/JVM, TypeScript) pass 100% of the corpus across
 both profiles and both modes (`encode`, `decode-strict`), checked on every
 push/PR in CI (`.github/workflows/conformance.yml`).
 
