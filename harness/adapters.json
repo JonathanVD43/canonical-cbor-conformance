@@ -19,6 +19,11 @@
       "name": "go",
       "binary": "adapters/go/adapter",
       "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "python",
+      "binary": "adapters/python/main.py",
+      "profiles": ["rfc8949", "dcbor"]
     }
   ]
 }

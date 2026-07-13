@@ -66,6 +66,13 @@ jobs:
         run: go test ./...
         working-directory: adapters/go
 
+      - name: Test Python adapter
+        run: python3 -m pytest -q
+        working-directory: adapters/python
+
+      - name: Mark Python adapter CLI executable
+        run: chmod +x adapters/python/main.py
+
       - name: Run conformance harness
         run: python3 harness/run.py
 
