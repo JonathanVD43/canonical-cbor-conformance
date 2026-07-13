@@ -81,12 +81,12 @@ jobs:
       - name: Mark Python adapter CLI executable
         run: chmod +x adapters/python/main.py
 
-      - name: Build C adapter
-        run: make adapter
-        working-directory: adapters/c
-
       - name: Build and run C adapter unit tests (ASan + UBSan)
         run: make test-asan
+        working-directory: adapters/c
+
+      - name: Build C adapter
+        run: make adapter
         working-directory: adapters/c
 
       - name: Run conformance harness

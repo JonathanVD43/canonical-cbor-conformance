@@ -37,17 +37,28 @@ test: test_runner
 
 # Sanitizer-enabled unit test build (ASan + UBSan), per CONTRIBUTING.md's
 # "memory safety is a first-class concern" requirement for this adapter.
+# Only forces a rebuild of test_runner (not adapter): Make can't see that
+# CFLAGS changed between a plain `test` and this target, so test_runner
+# must be force-deleted to guarantee a fresh sanitizer-instrumented
+# compile -- but that must not delete the unrelated `adapter` binary a
+# separate `make adapter` step may have already produced (this exact
+# cross-target deletion broke CI: the harness step found no adapter
+# binary because this target's `clean` prerequisite had deleted it).
 test-asan: CFLAGS += $(SAN_FLAGS)
 test-asan: LDFLAGS += $(SAN_FLAGS)
-test-asan: clean test_runner
+test-asan:
+	rm -f test_runner
+	$(CC) $(CFLAGS) -I$(SRC_DIR) -o test_runner $(LIB_SRCS) $(TEST_SRCS) $(LDFLAGS)
 	./test_runner
 
 # Sanitizer-enabled CLI binary, for running the conformance harness (or a
 # raw vector sample) under ASan/UBSan -- CI wires this into the vector
-# pass, not just the unit test run.
+# pass, not just the unit test run. Only forces a rebuild of `adapter`,
+# for the same reason test-asan above only touches `test_runner`.
 adapter-asan: CFLAGS += $(SAN_FLAGS)
 adapter-asan: LDFLAGS += $(SAN_FLAGS)
-adapter-asan: clean
+adapter-asan:
+	rm -f adapter
 	$(CC) $(CFLAGS) -I$(SRC_DIR) -o adapter $(SRCS) $(LDFLAGS)
 
 clean:
