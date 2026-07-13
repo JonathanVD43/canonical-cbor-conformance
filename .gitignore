@@ -5,6 +5,7 @@ __pycache__/
 *.gem
 oracle/.bundle/
 harness/report/latest.json
+harness/report/dashboard.md
 adapters/rust/target/
 adapters/rust/fuzz/target/
 adapters/rust/fuzz/corpus/
@@ -12,4 +13,12 @@ adapters/kotlin/build/
 adapters/kotlin/.gradle/
 adapters/kotlin/.kotlin/
 adapters/typescript/node_modules/
+adapters/go/adapter
+adapters/go/adapter.exe
+adapters/java/build/
+adapters/java/.gradle/
+adapters/java/.kotlin/
+adapters/c/adapter
+adapters/c/test_runner
+*.log
 docs/superpowers/

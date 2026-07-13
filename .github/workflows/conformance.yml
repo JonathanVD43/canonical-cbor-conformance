@@ -36,6 +36,14 @@ jobs:
         run: ./gradlew installDist --no-daemon
         working-directory: adapters/kotlin
 
+      - name: Test Java adapter
+        run: ./gradlew test --no-daemon
+        working-directory: adapters/java
+
+      - name: Build Java adapter
+        run: ./gradlew installDist --no-daemon
+        working-directory: adapters/java
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -53,12 +61,46 @@ jobs:
         run: npm test
         working-directory: adapters/typescript
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build Go adapter
+        run: go build -o adapter .
+        working-directory: adapters/go
+
+      - name: Test Go adapter
+        run: go test ./...
+        working-directory: adapters/go
+
+      - name: Test Python adapter
+        run: python3 -m pytest -q
+        working-directory: adapters/python
+
+      - name: Mark Python adapter CLI executable
+        run: chmod +x adapters/python/main.py
+
+      - name: Build and run C adapter unit tests (ASan + UBSan)
+        run: make test-asan
+        working-directory: adapters/c
+
+      - name: Build C adapter
+        run: make adapter
+        working-directory: adapters/c
+
       - name: Run conformance harness
         run: python3 harness/run.py
+
+      - name: Generate interoperability dashboard
+        if: always()
+        run: python3 harness/report_markdown.py
 
       - name: Upload harness report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: harness-report
-          path: harness/report/latest.json
+          path: |
+            harness/report/latest.json
+            harness/report/dashboard.md

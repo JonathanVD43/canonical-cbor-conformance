@@ -14,6 +14,26 @@
       "name": "typescript",
       "binary": "adapters/typescript/src/main.ts",
       "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "go",
+      "binary": "adapters/go/adapter",
+      "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "python",
+      "binary": "adapters/python/main.py",
+      "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "java",
+      "binary": "adapters/java/build/install/adapter/bin/adapter",
+      "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "c",
+      "binary": "adapters/c/adapter",
+      "profiles": ["rfc8949", "dcbor"]
     }
   ]
 }
