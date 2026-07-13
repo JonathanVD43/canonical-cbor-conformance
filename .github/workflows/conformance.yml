@@ -92,9 +92,15 @@ jobs:
       - name: Run conformance harness
         run: python3 harness/run.py
 
+      - name: Generate interoperability dashboard
+        if: always()
+        run: python3 harness/report_markdown.py
+
       - name: Upload harness report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: harness-report
-          path: harness/report/latest.json
+          path: |
+            harness/report/latest.json
+            harness/report/dashboard.md
