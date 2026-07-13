@@ -17,4 +17,7 @@ adapters/go/adapter.exe
 adapters/java/build/
 adapters/java/.gradle/
 adapters/java/.kotlin/
+adapters/c/adapter
+adapters/c/test_runner
+*.log
 docs/superpowers/

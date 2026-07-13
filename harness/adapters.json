@@ -29,6 +29,11 @@
       "name": "java",
       "binary": "adapters/java/build/install/adapter/bin/adapter",
       "profiles": ["rfc8949", "dcbor"]
+    },
+    {
+      "name": "c",
+      "binary": "adapters/c/adapter",
+      "profiles": ["rfc8949", "dcbor"]
     }
   ]
 }
