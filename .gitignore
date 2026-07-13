@@ -14,4 +14,7 @@ adapters/kotlin/.kotlin/
 adapters/typescript/node_modules/
 adapters/go/adapter
 adapters/go/adapter.exe
+adapters/java/build/
+adapters/java/.gradle/
+adapters/java/.kotlin/
 docs/superpowers/

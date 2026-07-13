@@ -36,6 +36,14 @@ jobs:
         run: ./gradlew installDist --no-daemon
         working-directory: adapters/kotlin
 
+      - name: Test Java adapter
+        run: ./gradlew test --no-daemon
+        working-directory: adapters/java
+
+      - name: Build Java adapter
+        run: ./gradlew installDist --no-daemon
+        working-directory: adapters/java
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
