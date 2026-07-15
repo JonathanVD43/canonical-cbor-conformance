@@ -6,7 +6,15 @@ these two pinned profiles" — either bare RFC 8949 §4.2 deterministic
 encoding, or the stricter dCBOR superset. "Deterministic" is used only when
 quoting RFC 8949's own section title.
 
-## Profile: `rfc8949-profile-1`
+## Profile: `rfc8949-profile-2`
+
+**Changed from `rfc8949-profile-1`**: `decode-strict` now enforces the
+bignum rule (below) instead of treating it as encoder-only, adding the
+`NON_CANONICAL_BIGNUM` reason code. This is a behavioral change — an
+input that previously `ACCEPT`ed under `decode-strict` (a bignum whose
+magnitude fit the native range, or a non-minimal-length bignum
+byte-string) now `REJECT`s. Same change applies to `dcbor-profile-draft-05`
+(from `-draft-04`) — the bignum rule doesn't diverge between profiles.
 
 Base: RFC 8949 §4.2.1, "Core Deterministic Encoding Requirements."
 
@@ -51,6 +59,17 @@ MUST use the minimal big-endian byte-string encoding of the magnitude (no
 leading zero byte). This resolves the ambiguity RFC 8949's and dCBOR's
 "shortest possible encoding" language leaves open for bignums.
 
+This rule binds decoders too, not just encoders: `decode-strict` MUST
+reject a tag 2/3 item whose magnitude fits the native 64-bit range, and
+MUST reject a tag 2/3 item whose byte-string payload is not the minimal
+big-endian encoding of its magnitude (a non-empty payload with a leading
+zero byte), with reason code `NON_CANONICAL_BIGNUM`. A bignum-tagged value
+that could validly be re-encoded as a plain integer is exactly the kind of
+re-encoding ambiguity this project's strict-decode contract exists to
+close — the same rationale as every other decode-strict rule, not a
+weaker one just because the bignum rule happens to be phrased as an
+encoder obligation above.
+
 ## `decode-strict` reason codes (both profiles)
 
 A conformant `decode-strict` implementation rejects non-canonical but
@@ -59,7 +78,7 @@ well-formed CBOR with one of these reason codes:
 `NON_SHORTEST_INT`, `UNSORTED_MAP_KEYS`, `INDEFINITE_LENGTH`,
 `DUPLICATE_KEY`, `NON_SHORTEST_FLOAT`, `NAN_PAYLOAD_VARIANT`,
 `TRAILING_BYTES`, `MULTIPLE_TOP_LEVEL_ITEMS`, `UNKNOWN_TAG`,
-`NON_NFC_STRING`, `UNREDUCED_NUMERIC`.
+`NON_NFC_STRING`, `UNREDUCED_NUMERIC`, `NON_CANONICAL_BIGNUM`.
 
 ## Logical-value grammar
 

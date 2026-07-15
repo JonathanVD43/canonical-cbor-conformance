@@ -62,6 +62,22 @@ def test_unknown_tag():
     assert reject("d86405", "rfc8949") == "UNKNOWN_TAG"
 
 
+def test_non_canonical_bignum():
+    # (a) magnitude fits native range: tag 2 wrapping magnitude 1.
+    assert reject("c24101", "rfc8949") == "NON_CANONICAL_BIGNUM"
+    assert reject("c24101", "dcbor") == "NON_CANONICAL_BIGNUM"
+    # (a) exact boundary: 2^64-1 (8-byte all-ones).
+    assert reject("c248ffffffffffffffff", "rfc8949") == "NON_CANONICAL_BIGNUM"
+    # (b) non-minimal length: 2^64 with a leading zero byte.
+    assert reject("c24a00010000000000000000", "rfc8949") == "NON_CANONICAL_BIGNUM"
+    # tag 3 negative equivalents.
+    assert reject("c34101", "dcbor") == "NON_CANONICAL_BIGNUM"
+    assert reject("c34a00010000000000000000", "rfc8949") == "NON_CANONICAL_BIGNUM"
+    # Genuinely canonical bignums (magnitude >= 2^64, minimal) still ACCEPT.
+    assert accept("c249010000000000000000", "rfc8949") == "c249010000000000000000"
+    assert accept("c349010000000000000000", "rfc8949") == "c349010000000000000000"
+
+
 def test_non_nfc_string_dcbor_only():
     # "cafe" + combining acute accent (U+0301), not normalized to NFC.
     b = "6663616665cc81"

@@ -8,10 +8,10 @@ the information needed to tell *why* something is non-canonical: which
 additional-info width was used, raw NaN payload bits, raw map-key byte
 order.
 
-Known scope gap, matching the Rust/Kotlin/TypeScript/Go adapters: a tag-2/3
-(bignum) item whose magnitude fits the native 64-bit range is not rejected
-here -- none of the 11 documented decode-strict reason codes covers it and
-no vector in the corpus exercises it.
+Bignum rule (SPEC.md), matching the Rust/Kotlin/TypeScript/Go adapters: a
+tag-2/3 (bignum) item is rejected with NON_CANONICAL_BIGNUM if its magnitude
+fits the native 64-bit range or its byte-string payload is non-minimal (a
+leading zero byte). A genuinely canonical bignum still ACCEPTs.
 
 Unlike the Go port, this uses real exceptions to unwind out of nested
 recursive-descent calls (DecodeSignal), rather than Go's per-call `if err !=
@@ -45,6 +45,7 @@ REASON_CODES = {
     "UNKNOWN_TAG",
     "NON_NFC_STRING",
     "UNREDUCED_NUMERIC",
+    "NON_CANONICAL_BIGNUM",
 }
 
 # UNKNOWN_TAG allow-list: only the bignum tags are exercised by the current
@@ -279,6 +280,15 @@ def _parse_item(data: bytes, c: _Cursor, profile: str):
         if tag not in ALLOWED_TAGS:
             raise _reject("UNKNOWN_TAG")
         inner = _parse_item(data, c, profile)
+        # Bignum rule: a tag 2/3 payload must be the minimal big-endian
+        # encoding of a magnitude >= 2^64. Reject if the magnitude fits the
+        # native 64-bit range (a <= 8-byte payload always does, once the
+        # leading-zero case is ruled out) or the payload is non-minimal
+        # (non-empty with a leading zero byte).
+        if tag in (2, 3) and isinstance(inner, _ItemBytes):
+            b = inner.v
+            if (len(b) >= 1 and b[0] == 0) or len(b) <= 8:
+                raise _reject("NON_CANONICAL_BIGNUM")
         return _ItemTagged(tag, inner)
     raise _internal("internal: major type is 3 bits, always 0-7")
 

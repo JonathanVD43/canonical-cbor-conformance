@@ -32,6 +32,7 @@ const REASON_CODES = new Set([
   "UNKNOWN_TAG",
   "NON_NFC_STRING",
   "UNREDUCED_NUMERIC",
+  "NON_CANONICAL_BIGNUM",
 ]);
 
 // Placeholder allow-list for the UNKNOWN_TAG check: only the bignum tags are
@@ -256,6 +257,17 @@ function parseItem(input: Uint8Array, cursor: Cursor, profile: Profile): Item {
       const tag = head.arg;
       if (!ALLOWED_TAGS.has(tag)) throw new DecodeException("UNKNOWN_TAG");
       const inner = parseItem(input, cursor, profile);
+      // Bignum rule: a tag 2/3 payload must be the minimal big-endian
+      // encoding of a magnitude >= 2^64. Reject if the magnitude fits the
+      // native 64-bit range (a <= 8-byte payload always does, once the
+      // leading-zero case is ruled out) or the payload is non-minimal
+      // (non-empty with a leading zero byte).
+      if ((tag === 2n || tag === 3n) && inner.kind === "bytes") {
+        const b = inner.v;
+        if ((b.length > 0 && b[0] === 0) || b.length <= 8) {
+          throw new DecodeException("NON_CANONICAL_BIGNUM");
+        }
+      }
       return { kind: "taggedItem", tag, inner };
     }
     default:

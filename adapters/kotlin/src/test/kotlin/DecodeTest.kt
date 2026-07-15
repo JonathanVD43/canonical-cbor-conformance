@@ -90,6 +90,25 @@ class DecodeTest {
     }
 
     @Test
+    fun nonCanonicalBignum() {
+        // (a) magnitude fits native range: tag 2 wrapping magnitude 1.
+        assertEquals("NON_CANONICAL_BIGNUM", reject(hexDecode("c24101"), Profile.RFC8949))
+        assertEquals("NON_CANONICAL_BIGNUM", reject(hexDecode("c24101"), Profile.DCBOR))
+        // (a) exact boundary: 2^64-1 (8-byte all-ones).
+        assertEquals("NON_CANONICAL_BIGNUM", reject(hexDecode("c248ffffffffffffffff"), Profile.RFC8949))
+        // (b) non-minimal length: 2^64 with a leading zero byte.
+        assertEquals("NON_CANONICAL_BIGNUM", reject(hexDecode("c24a00010000000000000000"), Profile.RFC8949))
+        // tag 3 negative equivalents.
+        assertEquals("NON_CANONICAL_BIGNUM", reject(hexDecode("c34101"), Profile.DCBOR))
+        assertEquals("NON_CANONICAL_BIGNUM", reject(hexDecode("c34a00010000000000000000"), Profile.RFC8949))
+        // Genuinely canonical bignums (magnitude >= 2^64, minimal) still ACCEPT.
+        val ok = hexDecode("c249010000000000000000")
+        assertEquals(ok.toList(), accept(ok, Profile.RFC8949).toList())
+        val okNeg = hexDecode("c349010000000000000000")
+        assertEquals(okNeg.toList(), accept(okNeg, Profile.RFC8949).toList())
+    }
+
+    @Test
     fun nonNfcStringDcborOnly() {
         // "cafe" + combining acute accent (U+0301), not normalized to NFC.
         val bytes = hexDecode("6663616665cc81")

@@ -11,7 +11,7 @@
       "properties": {
         "id": { "type": "string" },
         "rule": {
-          "description": "One of SPEC.md's decode-strict reason codes. NON_SHORTEST_INT, UNSORTED_MAP_KEYS, INDEFINITE_LENGTH, DUPLICATE_KEY, NON_SHORTEST_FLOAT, NAN_PAYLOAD_VARIANT, TRAILING_BYTES, MULTIPLE_TOP_LEVEL_ITEMS, and UNKNOWN_TAG apply to both profiles (each gets a copy of the vector under both profiles' strict-decode-reject/ dirs, since the underlying rule and expected reason code are identical in rfc8949-profile-1 and dcbor-profile-<draft-version>). NON_NFC_STRING and UNREDUCED_NUMERIC are dcbor-only reason codes with no rfc8949 counterpart (rfc8949's P9 explicitly does not normalize string content, and rfc8949 has no numeric-reduction rule at all) — vectors for these two codes exist only under vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/.",
+          "description": "One of SPEC.md's decode-strict reason codes. NON_SHORTEST_INT, UNSORTED_MAP_KEYS, INDEFINITE_LENGTH, DUPLICATE_KEY, NON_SHORTEST_FLOAT, NAN_PAYLOAD_VARIANT, TRAILING_BYTES, MULTIPLE_TOP_LEVEL_ITEMS, UNKNOWN_TAG, and NON_CANONICAL_BIGNUM apply to both profiles (each gets a copy of the vector under both profiles' strict-decode-reject/ dirs, since the underlying rule and expected reason code are identical in rfc8949-profile-1 and dcbor-profile-<draft-version>) — the bignum rule itself doesn't diverge between profiles. NON_NFC_STRING and UNREDUCED_NUMERIC are dcbor-only reason codes with no rfc8949 counterpart (rfc8949's P9 explicitly does not normalize string content, and rfc8949 has no numeric-reduction rule at all) — vectors for these two codes exist only under vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/.",
           "enum": [
             "NON_SHORTEST_INT",
             "UNSORTED_MAP_KEYS",
@@ -23,7 +23,8 @@
             "MULTIPLE_TOP_LEVEL_ITEMS",
             "UNKNOWN_TAG",
             "NON_NFC_STRING",
-            "UNREDUCED_NUMERIC"
+            "UNREDUCED_NUMERIC",
+            "NON_CANONICAL_BIGNUM"
           ]
         },
         "rationale": {
@@ -49,7 +50,8 @@
             "MULTIPLE_TOP_LEVEL_ITEMS",
             "UNKNOWN_TAG",
             "NON_NFC_STRING",
-            "UNREDUCED_NUMERIC"
+            "UNREDUCED_NUMERIC",
+            "NON_CANONICAL_BIGNUM"
           ]
         }
       },

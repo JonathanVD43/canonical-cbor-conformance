@@ -1,0 +1,50 @@
+[
+  {
+    "id": "bignum-fits-native-positive-one",
+    "rule": "NON_CANONICAL_BIGNUM",
+    "rationale": "Tag 2 (positive bignum, 0xc2) wrapping a 1-byte magnitude 0x01. Magnitude 1 fits the native 64-bit range, so per SPEC.md's bignum rule it MUST have been a plain integer (major type 0), never a tag-2 bignum.",
+    "input_hex": "c24101",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_CANONICAL_BIGNUM"
+  },
+  {
+    "id": "bignum-fits-native-positive-max-u64",
+    "rule": "NON_CANONICAL_BIGNUM",
+    "rationale": "Tag 2 wrapping the 8-byte magnitude 0xffffffffffffffff = 2^64-1, the exact largest magnitude that still fits the native unsigned range. It must be a plain integer (0x1bffffffffffffffff), never a tag-2 bignum -- the boundary case just below where bignums become mandatory.",
+    "input_hex": "c248ffffffffffffffff",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_CANONICAL_BIGNUM"
+  },
+  {
+    "id": "bignum-non-minimal-positive-leading-zero",
+    "rule": "NON_CANONICAL_BIGNUM",
+    "rationale": "Tag 2 wrapping a 10-byte payload 0x00010000000000000000: the magnitude is 2^64 (genuinely a bignum), but the byte string carries an extra leading 0x00 byte, so it is not the minimal big-endian encoding (the canonical form is the 9-byte 0x010000000000000000). Non-minimal-length bignum payload.",
+    "input_hex": "c24a00010000000000000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_CANONICAL_BIGNUM"
+  },
+  {
+    "id": "bignum-fits-native-negative-one",
+    "rule": "NON_CANONICAL_BIGNUM",
+    "rationale": "Tag 3 (negative bignum, 0xc3) wrapping a 1-byte stored magnitude 0x01, i.e. the value -(1+1) = -2. |-2| fits the native negative range (-1..-2^64), so it MUST be a plain negative integer (major type 1, 0x21), never a tag-3 bignum.",
+    "input_hex": "c34101",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_CANONICAL_BIGNUM"
+  },
+  {
+    "id": "bignum-fits-native-negative-max",
+    "rule": "NON_CANONICAL_BIGNUM",
+    "rationale": "Tag 3 wrapping the 8-byte stored magnitude 0xffffffffffffffff = 2^64-1, i.e. the value -(2^64-1+1) = -2^64, the most-negative value that still fits the native range. It must be a plain negative integer (0x3bffffffffffffffff), never a tag-3 bignum -- the negative-side boundary case.",
+    "input_hex": "c348ffffffffffffffff",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_CANONICAL_BIGNUM"
+  },
+  {
+    "id": "bignum-non-minimal-negative-leading-zero",
+    "rule": "NON_CANONICAL_BIGNUM",
+    "rationale": "Tag 3 wrapping a 10-byte payload 0x00010000000000000000: the stored magnitude is 2^64 (the value -(2^64+1), genuinely a negative bignum), but the byte string carries an extra leading 0x00 byte, so it is not the minimal big-endian encoding (the canonical form is the 9-byte 0x010000000000000000). Non-minimal-length bignum payload on the negative side.",
+    "input_hex": "c34a00010000000000000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_CANONICAL_BIGNUM"
+  }
+]

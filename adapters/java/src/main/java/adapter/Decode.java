@@ -23,11 +23,11 @@ import java.util.Set;
  * order. See README.md for the library investigation this conclusion is
  * based on.
  *
- * Known scope gap, matching adapters/rust/src/decode.rs and
- * adapters/kotlin/.../Decode.kt: a tag-2/3 (bignum) item whose magnitude
- * fits the native 64-bit range is not rejected here -- none of the 11
- * documented decode-strict reason codes covers it and no vector in the
- * corpus exercises it.
+ * Bignum rule (SPEC.md), matching adapters/rust/src/decode.rs and
+ * adapters/kotlin/.../Decode.kt: a tag-2/3 (bignum) item is rejected with
+ * NON_CANONICAL_BIGNUM if its magnitude fits the native 64-bit range or its
+ * byte-string payload is non-minimal (a leading zero byte). A genuinely
+ * canonical bignum still ACCEPTs.
  *
  * `arg`/tag values that are logically unsigned 64-bit use Java's signed
  * `long` as a 64-bit bit-pattern with `Long.compareUnsigned` /
@@ -58,7 +58,8 @@ public final class Decode {
         "MULTIPLE_TOP_LEVEL_ITEMS",
         "UNKNOWN_TAG",
         "NON_NFC_STRING",
-        "UNREDUCED_NUMERIC"
+        "UNREDUCED_NUMERIC",
+        "NON_CANONICAL_BIGNUM"
     );
 
     // Placeholder allow-list for the UNKNOWN_TAG check: only the bignum tags
@@ -278,6 +279,17 @@ public final class Decode {
                 long tag = head.arg;
                 if (!ALLOWED_TAGS.contains(tag)) throw new DecodeException("UNKNOWN_TAG");
                 Item inner = parseItem(input, cursor, profile);
+                // Bignum rule: a tag 2/3 payload must be the minimal big-endian
+                // encoding of a magnitude >= 2^64. Reject if the magnitude fits
+                // the native 64-bit range (a <= 8-byte payload always does, once
+                // the leading-zero case is ruled out) or the payload is
+                // non-minimal (non-empty with a leading zero byte).
+                if ((tag == 2L || tag == 3L) && inner instanceof Item.Bytes bytesItem) {
+                    byte[] b = bytesItem.v();
+                    if ((b.length >= 1 && b[0] == 0) || b.length <= 8) {
+                        throw new DecodeException("NON_CANONICAL_BIGNUM");
+                    }
+                }
                 return new Item.TaggedItem(tag, inner);
             }
             default:
