@@ -6,5 +6,45 @@
     "input_hex": "6663616665cc81",
     "expected_verdict": "reject",
     "expected_reason": "NON_NFC_STRING"
+  },
+  {
+    "id": "non-nfc-string-e-combining-acute",
+    "rule": "NON_NFC_STRING",
+    "rationale": "Text \"e\"+U+0301 (decomposed é); NFC composes to U+00E9.",
+    "input_hex": "6365cc81",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_NFC_STRING"
+  },
+  {
+    "id": "non-nfc-string-marks-need-reorder",
+    "rule": "NON_NFC_STRING",
+    "rationale": "Text \"a\"+U+0301+U+0323: combining marks in non-canonical order (CCC 230 before 220); NFC reorders (and composes) them.",
+    "input_hex": "6561cc81cca3",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_NFC_STRING"
+  },
+  {
+    "id": "non-nfc-string-angstrom-singleton",
+    "rule": "NON_NFC_STRING",
+    "rationale": "Text U+212B (angstrom sign); NFC singleton-decomposes it to U+00C5 (Å).",
+    "input_hex": "63e284ab",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_NFC_STRING"
+  },
+  {
+    "id": "non-nfc-string-A-ring-decomposed",
+    "rule": "NON_NFC_STRING",
+    "rationale": "Text \"A\"+U+030A (decomposed Å); NFC composes to U+00C5.",
+    "input_hex": "6341cc8a",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_NFC_STRING"
+  },
+  {
+    "id": "non-nfc-string-o-combining-acute",
+    "rule": "NON_NFC_STRING",
+    "rationale": "Text \"o\"+U+0301 (decomposed ó); NFC composes to U+00F3.",
+    "input_hex": "636fcc81",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_NFC_STRING"
   }
 ]

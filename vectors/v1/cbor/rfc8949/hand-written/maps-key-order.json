@@ -60,5 +60,101 @@
       ]
     },
     "expected_hex": "a21903e8023701"
+  },
+  {
+    "id": "map-mixed-int-widths-and-negatives",
+    "rule": "P2",
+    "rationale": "Ten integer keys spanning every encoded width (immediate, 1-byte, 2-byte, 4-byte extensions) plus three negative-integer widths, in one map. Confirms breadth of pure-bytewise ordering across many widths at once, not just a single trap pair. Verified byte-identical across Rust and Go's independent encoders, and Python's, both profiles (no dcbor-specific transform applies to plain integers).",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "1"}],
+        [{"type": "int", "value": "23"}, {"type": "int", "value": "2"}],
+        [{"type": "int", "value": "24"}, {"type": "int", "value": "3"}],
+        [{"type": "int", "value": "255"}, {"type": "int", "value": "4"}],
+        [{"type": "int", "value": "256"}, {"type": "int", "value": "5"}],
+        [{"type": "int", "value": "65535"}, {"type": "int", "value": "6"}],
+        [{"type": "int", "value": "65536"}, {"type": "int", "value": "7"}],
+        [{"type": "int", "value": "-1"}, {"type": "int", "value": "8"}],
+        [{"type": "int", "value": "-100"}, {"type": "int", "value": "9"}],
+        [{"type": "int", "value": "-1000"}, {"type": "int", "value": "10"}]
+      ]
+    },
+    "expected_hex": "aa0001170218180318ff041901000519ffff061a000100000720083863093903e70a"
+  },
+  {
+    "id": "map-empty-and-nonempty-string-keys",
+    "rule": "P2",
+    "rationale": "Empty byte string, empty text string, a 1-byte byte-string key, a 1-char text key, and a long text key (past the one-byte length-extension boundary) together in one map -- exercises the shortest possible encoded keys sorting correctly against much longer ones of the same and different major types.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "bytes", "value": ""}, {"type": "int", "value": "1"}],
+        [{"type": "text", "value": ""}, {"type": "int", "value": "2"}],
+        [{"type": "bytes", "value": "01"}, {"type": "int", "value": "3"}],
+        [{"type": "text", "value": "a"}, {"type": "int", "value": "4"}],
+        [{"type": "text", "value": "a much longer text string key that pushes past the one-byte length extension boundary of twenty three characters"}, {"type": "int", "value": "5"}]
+      ]
+    },
+    "expected_hex": "a540014101036002616104787061206d756368206c6f6e676572207465787420737472696e67206b6579207468617420707573686573207061737420746865206f6e652d62797465206c656e67746820657874656e73696f6e20626f756e64617279206f66207477656e7479207468726565206368617261637465727305"
+  },
+  {
+    "id": "map-tag-as-key",
+    "rule": "P2",
+    "rationale": "A tag-wrapped value (tag 2, one of decode-strict's allow-listed tags, wrapping a byte string) used as a map key alongside a plain int key -- confirms the grammar and canonical sort handle a tag value as a key, not just as a top-level or map-value position. Tag 2 chosen deliberately so this vector also round-trips through decode-strict ACCEPT without an UNKNOWN_TAG false rejection.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "1"}],
+        [{"type": "tag", "tag": 2, "value": {"type": "bytes", "value": "01"}}, {"type": "int", "value": "2"}]
+      ]
+    },
+    "expected_hex": "a20001c2410102"
+  },
+  {
+    "id": "map-nested-array-key",
+    "rule": "P2",
+    "rationale": "Array values used as map keys, sorted correctly against each other and against a plain int key -- major type 4 (array) sorts after int/negative-int/bytes/text per the canonical major-type ordering.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "array", "items": [{"type": "int", "value": "1"}]}, {"type": "int", "value": "1"}],
+        [{"type": "array", "items": [{"type": "int", "value": "2"}]}, {"type": "int", "value": "2"}],
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "3"}]
+      ]
+    },
+    "expected_hex": "a30003810101810202"
+  },
+  {
+    "id": "map-nested-map-key",
+    "rule": "P2",
+    "rationale": "A map value used as a map key, alongside an int and a text key -- major type 5 (map) sorts after array (major type 4) and before tag (major type 6) per the canonical major-type ordering.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "map", "entries": [[{"type": "int", "value": "1"}, {"type": "int", "value": "1"}]]}, {"type": "int", "value": "1"}],
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "2"}],
+        [{"type": "text", "value": "x"}, {"type": "int", "value": "3"}]
+      ]
+    },
+    "expected_hex": "a30002617803a1010101"
+  },
+  {
+    "id": "map-cross-major-type-mix",
+    "rule": "P2",
+    "rationale": "Seven keys spanning six of the seven CBOR major types (int, negative-int, bytes, text, array, map, tag) in one map -- the broadest single cross-major-type ordering exercise in the corpus, confirming the sort holds across the full type range at once, not just pairwise.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "int", "value": "5"}, {"type": "int", "value": "1"}],
+        [{"type": "int", "value": "-5"}, {"type": "int", "value": "2"}],
+        [{"type": "bytes", "value": "aa"}, {"type": "int", "value": "3"}],
+        [{"type": "text", "value": "k"}, {"type": "int", "value": "4"}],
+        [{"type": "array", "items": [{"type": "int", "value": "1"}]}, {"type": "int", "value": "5"}],
+        [{"type": "map", "entries": [[{"type": "int", "value": "1"}, {"type": "int", "value": "1"}]]}, {"type": "int", "value": "6"}],
+        [{"type": "tag", "tag": 2, "value": {"type": "bytes", "value": "01"}}, {"type": "int", "value": "7"}]
+      ]
+    },
+    "expected_hex": "a70501240241aa03616b04810105a1010106c2410107"
   }
 ]

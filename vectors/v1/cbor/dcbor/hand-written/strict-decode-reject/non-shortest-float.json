@@ -6,5 +6,45 @@
     "input_hex": "fb4004000000000000",
     "expected_verdict": "reject",
     "expected_reason": "NON_SHORTEST_FLOAT"
+  },
+  {
+    "id": "non-shortest-float-2-5-as-f32",
+    "rule": "NON_SHORTEST_FLOAT",
+    "rationale": "2.5 as f32; it round-trips exactly in f16 (0xf9 0x4100).",
+    "input_hex": "fa40200000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_FLOAT"
+  },
+  {
+    "id": "non-shortest-float-1-5-as-f64",
+    "rule": "NON_SHORTEST_FLOAT",
+    "rationale": "1.5 as f64; it round-trips exactly in f16 (0xf9 0x3e00).",
+    "input_hex": "fb3ff8000000000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_FLOAT"
+  },
+  {
+    "id": "non-shortest-float-neg2-5-as-f64",
+    "rule": "NON_SHORTEST_FLOAT",
+    "rationale": "-2.5 as f64; it round-trips exactly in f16 (0xf9 0xc100).",
+    "input_hex": "fbc004000000000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_FLOAT"
+  },
+  {
+    "id": "non-shortest-float-100000-5-as-f64",
+    "rule": "NON_SHORTEST_FLOAT",
+    "rationale": "100000.5 as f64; it round-trips exactly in f32 (0xfa 0x47c35040) but not f16, so f32 is the shortest form.",
+    "input_hex": "fb40f86a0800000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_FLOAT"
+  },
+  {
+    "id": "non-shortest-float-neg65536-5-as-f64",
+    "rule": "NON_SHORTEST_FLOAT",
+    "rationale": "-65536.5 as f64; it round-trips exactly in f32 (0xfa 0xc7800040) but not f16.",
+    "input_hex": "fbc0f0000800000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_FLOAT"
   }
 ]
