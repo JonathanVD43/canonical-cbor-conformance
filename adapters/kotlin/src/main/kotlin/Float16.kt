@@ -54,7 +54,17 @@ fun f16BitsToDouble(bits: Int): Double {
     return when {
         exp == 0L && man == 0L -> java.lang.Double.longBitsToDouble(sign64)
         exp == 0L -> {
-            var expAdj = -1L
+            // Normalize the 10-bit subnormal significand by left-shifting
+            // until its leading set bit reaches position 10 (the
+            // implicit-bit position), counting shifts via expAdj. expAdj
+            // MUST start at 1, not -1: for the smallest subnormal (man=1,
+            // true value 2^-24), exactly 10 shifts are needed to reach
+            // manAdj=0x400, and the final double exponent must come out to
+            // 1023-24=999. That only holds if expAdj lands on 1-10=-9
+            // (giving 1008+(-9)=999); a -1 starting point yields -11,
+            // undercounting by 2 and silently quartering the reconstructed
+            // magnitude of every subnormal f16 value.
+            var expAdj = 1L
             var manAdj = man
             while ((manAdj and 0x400L) == 0L) {
                 manAdj = manAdj shl 1
