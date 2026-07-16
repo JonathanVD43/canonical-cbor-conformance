@@ -91,6 +91,25 @@ class DecodeTest {
     }
 
     @Test
+    void nonCanonicalBignum() {
+        // (a) magnitude fits native range: tag 2 wrapping magnitude 1.
+        assertEquals("NON_CANONICAL_BIGNUM", reject(Util.hexDecode("c24101"), Decode.Profile.RFC8949));
+        assertEquals("NON_CANONICAL_BIGNUM", reject(Util.hexDecode("c24101"), Decode.Profile.DCBOR));
+        // (a) exact boundary: 2^64-1 (8-byte all-ones).
+        assertEquals("NON_CANONICAL_BIGNUM", reject(Util.hexDecode("c248ffffffffffffffff"), Decode.Profile.RFC8949));
+        // (b) non-minimal length: 2^64 with a leading zero byte.
+        assertEquals("NON_CANONICAL_BIGNUM", reject(Util.hexDecode("c24a00010000000000000000"), Decode.Profile.RFC8949));
+        // tag 3 negative equivalents.
+        assertEquals("NON_CANONICAL_BIGNUM", reject(Util.hexDecode("c34101"), Decode.Profile.DCBOR));
+        assertEquals("NON_CANONICAL_BIGNUM", reject(Util.hexDecode("c34a00010000000000000000"), Decode.Profile.RFC8949));
+        // Genuinely canonical bignums (magnitude >= 2^64, minimal) still ACCEPT.
+        byte[] ok = Util.hexDecode("c249010000000000000000");
+        assertArrayEquals(ok, accept(ok, Decode.Profile.RFC8949));
+        byte[] okNeg = Util.hexDecode("c349010000000000000000");
+        assertArrayEquals(okNeg, accept(okNeg, Decode.Profile.RFC8949));
+    }
+
+    @Test
     void nonNfcStringDcborOnly() {
         // "cafe" + combining acute accent (U+0301), not normalized to NFC.
         byte[] bytes = Util.hexDecode("6663616665cc81");

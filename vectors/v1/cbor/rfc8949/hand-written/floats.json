@@ -42,5 +42,71 @@
       "value": "2.5"
     },
     "expected_hex": "f94100"
+  },
+  {
+    "id": "float-f16-smallest-subnormal",
+    "rule": "P5",
+    "rationale": "2^-24, the smallest positive f16 subnormal (bit pattern 0x0001) -- regression pin for a real bug found and fixed in this project's own reference adapters: f16-bits-to-double subnormal decode had an off-by-2 exponent error that silently quartered the magnitude of every subnormal f16 value on decode. No vector previously exercised the f16 subnormal range at all, which is exactly why it went undetected. Verified byte-identical across Rust, Go, and Python's independent encoders.",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "0.000000059604644775390625"
+    },
+    "expected_hex": "f90001"
+  },
+  {
+    "id": "float-f16-smallest-subnormal-negative",
+    "rule": "P5",
+    "rationale": "-2^-24, the negative counterpart of the smallest f16 subnormal -- confirms sign handling holds at the extreme low-magnitude boundary, not just the positive case.",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "-0.000000059604644775390625"
+    },
+    "expected_hex": "f98001"
+  },
+  {
+    "id": "float-f16-smallest-normal",
+    "rule": "P5",
+    "rationale": "2^-14, the smallest positive f16 normal value (bit pattern 0x0400) -- the boundary immediately above the subnormal range.",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "0.00006103515625"
+    },
+    "expected_hex": "f90400"
+  },
+  {
+    "id": "float-f16-max-finite",
+    "rule": "P5",
+    "rationale": "65504.0, the largest finite f16 value -- the boundary immediately below f16 overflowing to infinity.",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "65504.0"
+    },
+    "expected_hex": "f97bff"
+  },
+  {
+    "id": "float-f32-needed-not-f16",
+    "rule": "P5",
+    "rationale": "65536.5 exceeds f16's max finite magnitude (65504.0), so it cannot be represented in f16 at all -- shortest form must be f32, not f16 or f64. Exercises the shortest-form selector actually skipping f16 when the magnitude alone rules it out, not just when precision would be lost.",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "65536.5"
+    },
+    "expected_hex": "fa47800040"
+  },
+  {
+    "id": "float-f64-needed-not-f32",
+    "rule": "P5",
+    "rationale": "16777217.0 (2^24 + 1) needs 25 significant bits, one more than f32's 24-bit mantissa can hold exactly -- rounds to 2^24 in f32, so shortest form must be f64. Whole-number-valued but stays a float under rfc8949 (P5 has no int-reduction rule, unlike dcbor's D5) -- deliberately not a dcbor vector for that reason.",
+    "logical_value": {
+      "type": "float",
+      "width": "auto",
+      "value": "16777217.0"
+    },
+    "expected_hex": "fb4170000010000000"
   }
 ]

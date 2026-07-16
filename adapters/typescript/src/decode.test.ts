@@ -64,6 +64,22 @@ test("unknownTag", () => {
   reject(decodeStrict(hexDecode("d86405"), "rfc8949"), "UNKNOWN_TAG");
 });
 
+test("nonCanonicalBignum", () => {
+  // (a) magnitude fits native range: tag 2 wrapping magnitude 1
+  reject(decodeStrict(hexDecode("c24101"), "rfc8949"), "NON_CANONICAL_BIGNUM");
+  reject(decodeStrict(hexDecode("c24101"), "dcbor"), "NON_CANONICAL_BIGNUM");
+  // (a) exact boundary: 2^64-1 (8-byte all-ones)
+  reject(decodeStrict(hexDecode("c248ffffffffffffffff"), "rfc8949"), "NON_CANONICAL_BIGNUM");
+  // (b) non-minimal length: 2^64 with a leading zero byte
+  reject(decodeStrict(hexDecode("c24a00010000000000000000"), "rfc8949"), "NON_CANONICAL_BIGNUM");
+  // tag 3 negative equivalents
+  reject(decodeStrict(hexDecode("c34101"), "dcbor"), "NON_CANONICAL_BIGNUM");
+  reject(decodeStrict(hexDecode("c34a00010000000000000000"), "rfc8949"), "NON_CANONICAL_BIGNUM");
+  // Genuinely canonical bignums (magnitude >= 2^64, minimal) still ACCEPT
+  accept(decodeStrict(hexDecode("c249010000000000000000"), "rfc8949"), "c249010000000000000000");
+  accept(decodeStrict(hexDecode("c349010000000000000000"), "rfc8949"), "c349010000000000000000");
+});
+
 test("nonNfcStringDcborOnly", () => {
   // "cafe" + combining acute accent (U+0301), not NFC-normalized
   reject(decodeStrict(hexDecode("6663616665cc81"), "dcbor"), "NON_NFC_STRING");

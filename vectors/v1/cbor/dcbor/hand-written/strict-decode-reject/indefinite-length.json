@@ -6,5 +6,45 @@
     "input_hex": "9f00ff",
     "expected_verdict": "reject",
     "expected_reason": "INDEFINITE_LENGTH"
+  },
+  {
+    "id": "indefinite-length-map",
+    "rule": "INDEFINITE_LENGTH",
+    "rationale": "Map {0:0} with the indefinite-length map header 0xbf and break 0xff instead of the definite 0xa1.",
+    "input_hex": "bf0000ff",
+    "expected_verdict": "reject",
+    "expected_reason": "INDEFINITE_LENGTH"
+  },
+  {
+    "id": "indefinite-length-byte-string",
+    "rule": "INDEFINITE_LENGTH",
+    "rationale": "Byte string h'01' as an indefinite-length byte string (0x5f, one chunk 0x4101, break 0xff) instead of definite 0x4101.",
+    "input_hex": "5f4101ff",
+    "expected_verdict": "reject",
+    "expected_reason": "INDEFINITE_LENGTH"
+  },
+  {
+    "id": "indefinite-length-text-string",
+    "rule": "INDEFINITE_LENGTH",
+    "rationale": "Text \"a\" as an indefinite-length text string (0x7f, one chunk 0x6161, break 0xff) instead of definite 0x6161.",
+    "input_hex": "7f6161ff",
+    "expected_verdict": "reject",
+    "expected_reason": "INDEFINITE_LENGTH"
+  },
+  {
+    "id": "indefinite-length-nested-in-indefinite-array",
+    "rule": "INDEFINITE_LENGTH",
+    "rationale": "Indefinite-length array (0x9f) whose single element is a definite array [0]; the outer indefinite header is the violation.",
+    "input_hex": "9f8100ff",
+    "expected_verdict": "reject",
+    "expected_reason": "INDEFINITE_LENGTH"
+  },
+  {
+    "id": "indefinite-length-inside-definite-array",
+    "rule": "INDEFINITE_LENGTH",
+    "rationale": "Definite array [ [0] ] (0x81) whose element is an indefinite-length array (0x9f 0x00 0xff); the inner indefinite item is the violation, found on descent.",
+    "input_hex": "819f00ff",
+    "expected_verdict": "reject",
+    "expected_reason": "INDEFINITE_LENGTH"
   }
 ]

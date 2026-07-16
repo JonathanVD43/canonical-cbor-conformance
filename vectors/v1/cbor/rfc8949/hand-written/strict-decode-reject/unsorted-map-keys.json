@@ -6,5 +6,45 @@
     "input_hex": "a201000000",
     "expected_verdict": "reject",
     "expected_reason": "UNSORTED_MAP_KEYS"
+  },
+  {
+    "id": "unsorted-map-keys-length-first-int-vs-text",
+    "rule": "UNSORTED_MAP_KEYS",
+    "rationale": "Keys text \"a\" (0x6161, 2 bytes) then int 100000 (0x1a000186a0, 5 bytes). A length-first (RFC 7049) sorter keeps this order, but pure bytewise on the encoded key requires int first (0x1a < 0x61).",
+    "input_hex": "a26161001a000186a000",
+    "expected_verdict": "reject",
+    "expected_reason": "UNSORTED_MAP_KEYS"
+  },
+  {
+    "id": "unsorted-map-keys-content-vs-encoded-bytewise",
+    "rule": "UNSORTED_MAP_KEYS",
+    "rationale": "Keys text \"aa\" (0x626161) then text \"b\" (0x6162). Comparing decoded content puts \"aa\" first, but bytewise on the encoded key requires \"b\" first (head 0x61 < 0x62).",
+    "input_hex": "a262616100616200",
+    "expected_verdict": "reject",
+    "expected_reason": "UNSORTED_MAP_KEYS"
+  },
+  {
+    "id": "unsorted-map-keys-negative-before-positive",
+    "rule": "UNSORTED_MAP_KEYS",
+    "rationale": "Keys int -1 (0x20, major type 1) then int 0 (0x00, major type 0). A numeric sort puts -1 first, but bytewise requires 0 first (major-type-0 head 0x00 < 0x20).",
+    "input_hex": "a220000000",
+    "expected_verdict": "reject",
+    "expected_reason": "UNSORTED_MAP_KEYS"
+  },
+  {
+    "id": "unsorted-map-keys-text-before-bytes",
+    "rule": "UNSORTED_MAP_KEYS",
+    "rationale": "Keys text \"\" (0x60, major type 3) then byte string h'' (0x40, major type 2). Bytewise requires the byte-string key first (head 0x40 < 0x60).",
+    "input_hex": "a260004000",
+    "expected_verdict": "reject",
+    "expected_reason": "UNSORTED_MAP_KEYS"
+  },
+  {
+    "id": "unsorted-map-keys-array-keys",
+    "rule": "UNSORTED_MAP_KEYS",
+    "rationale": "Keys array [2] (0x8102) then array [1] (0x8101). Bytewise requires [1] first (0x8101 < 0x8102).",
+    "input_hex": "a2810200810100",
+    "expected_verdict": "reject",
+    "expected_reason": "UNSORTED_MAP_KEYS"
   }
 ]

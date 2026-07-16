@@ -67,6 +67,23 @@ class Float16Test {
     }
 
     @Test
+    fun subnormalExhaustiveRoundTrip() {
+        // Regression test for a found-and-fixed bug: f16BitsToDouble's
+        // subnormal branch used to start expAdj at -1 instead of 1,
+        // undercounting the normalization shift by 2 and silently
+        // quartering the magnitude of every subnormal f16 value on decode.
+        // The identical bug was already found and fixed in this project's
+        // C/Go/Python/Java adapters, but Kotlin and TypeScript were never
+        // checked -- caught only when this project's own real CI run
+        // failed on the newly-added float-f16-smallest-subnormal vector.
+        for (bits in 0..0x03ff) {
+            val got = f16BitsToDouble(bits)
+            val want = bits * Math.pow(2.0, -24.0)
+            assertEquals(want, got, 0.0, "bits=0x${bits.toString(16).padStart(4, '0')}")
+        }
+    }
+
+    @Test
     fun f32RoundTrip() {
         val b = tryF32(2.5)
         assertEquals("40200000", b!!.joinToString("") { "%02x".format(it) })

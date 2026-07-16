@@ -106,6 +106,34 @@ func TestDecodeUnknownTag(t *testing.T) {
 	}
 }
 
+func TestDecodeNonCanonicalBignum(t *testing.T) {
+	// (a) magnitude fits native range: tag 2 wrapping magnitude 1.
+	if got := reject(t, mustHex(t, "c24101"), ProfileRFC8949); got != "NON_CANONICAL_BIGNUM" {
+		t.Fatalf("got %s", got)
+	}
+	if got := reject(t, mustHex(t, "c24101"), ProfileDCBOR); got != "NON_CANONICAL_BIGNUM" {
+		t.Fatalf("got %s", got)
+	}
+	// (a) exact boundary: 2^64-1 (8-byte all-ones).
+	if got := reject(t, mustHex(t, "c248ffffffffffffffff"), ProfileRFC8949); got != "NON_CANONICAL_BIGNUM" {
+		t.Fatalf("got %s", got)
+	}
+	// (b) non-minimal length: 2^64 with a leading zero byte.
+	if got := reject(t, mustHex(t, "c24a00010000000000000000"), ProfileRFC8949); got != "NON_CANONICAL_BIGNUM" {
+		t.Fatalf("got %s", got)
+	}
+	// tag 3 negative equivalents.
+	if got := reject(t, mustHex(t, "c34101"), ProfileDCBOR); got != "NON_CANONICAL_BIGNUM" {
+		t.Fatalf("got %s", got)
+	}
+	if got := reject(t, mustHex(t, "c34a00010000000000000000"), ProfileRFC8949); got != "NON_CANONICAL_BIGNUM" {
+		t.Fatalf("got %s", got)
+	}
+	// Genuinely canonical bignums (magnitude >= 2^64, minimal) still ACCEPT.
+	assertHexEqual(t, accept(t, mustHex(t, "c249010000000000000000"), ProfileRFC8949), "c249010000000000000000")
+	assertHexEqual(t, accept(t, mustHex(t, "c349010000000000000000"), ProfileRFC8949), "c349010000000000000000")
+}
+
 func TestDecodeNonNfcStringDcborOnly(t *testing.T) {
 	// "cafe" + combining acute accent (U+0301), not normalized to NFC.
 	b := mustHex(t, "6663616665cc81")

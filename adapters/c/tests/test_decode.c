@@ -83,4 +83,18 @@ void run_decode_tests(void) {
     /* Bignum accept round-trip: 2^64 via tag 2. */
     expect_accept("c249010000000000000000", PROFILE_RFC8949);
     expect_accept("c249010000000000000000", PROFILE_DCBOR);
+
+    /* NON_CANONICAL_BIGNUM: (a) magnitude fits native range -- tag 2
+     * wrapping magnitude 1. */
+    expect_reject("c24101", PROFILE_RFC8949, "NON_CANONICAL_BIGNUM");
+    expect_reject("c24101", PROFILE_DCBOR, "NON_CANONICAL_BIGNUM");
+    /* (a) exact boundary: 2^64-1 (8-byte all-ones). */
+    expect_reject("c248ffffffffffffffff", PROFILE_RFC8949, "NON_CANONICAL_BIGNUM");
+    /* (b) non-minimal length: 2^64 with a leading zero byte. */
+    expect_reject("c24a00010000000000000000", PROFILE_RFC8949, "NON_CANONICAL_BIGNUM");
+    /* tag 3 negative equivalents. */
+    expect_reject("c34101", PROFILE_DCBOR, "NON_CANONICAL_BIGNUM");
+    expect_reject("c34a00010000000000000000", PROFILE_RFC8949, "NON_CANONICAL_BIGNUM");
+    /* Genuinely canonical negative bignum still ACCEPTs. */
+    expect_accept("c349010000000000000000", PROFILE_RFC8949);
 }

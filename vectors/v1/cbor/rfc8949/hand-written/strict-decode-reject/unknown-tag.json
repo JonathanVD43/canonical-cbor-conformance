@@ -6,5 +6,45 @@
     "input_hex": "d903e700",
     "expected_verdict": "reject",
     "expected_reason": "UNKNOWN_TAG"
+  },
+  {
+    "id": "unknown-tag-0-datetime",
+    "rule": "UNKNOWN_TAG",
+    "rationale": "Tag 0 (RFC 8949 text date/time, single-byte 0xc0) wrapping text \"a\"; not allow-listed (only bignum tags 2/3 are).",
+    "input_hex": "c06161",
+    "expected_verdict": "reject",
+    "expected_reason": "UNKNOWN_TAG"
+  },
+  {
+    "id": "unknown-tag-1-epoch",
+    "rule": "UNKNOWN_TAG",
+    "rationale": "Tag 1 (epoch date/time, single-byte 0xc1) wrapping int 0; not allow-listed.",
+    "input_hex": "c100",
+    "expected_verdict": "reject",
+    "expected_reason": "UNKNOWN_TAG"
+  },
+  {
+    "id": "unknown-tag-4-decimal-fraction",
+    "rule": "UNKNOWN_TAG",
+    "rationale": "Tag 4 (decimal fraction, single-byte 0xc4) wrapping [0,0]; numerically adjacent to bignum tags 2/3 but not allow-listed.",
+    "input_hex": "c4820000",
+    "expected_verdict": "reject",
+    "expected_reason": "UNKNOWN_TAG"
+  },
+  {
+    "id": "unknown-tag-100-single-arg-byte",
+    "rule": "UNKNOWN_TAG",
+    "rationale": "Tag 100 in the 1-byte-argument form (0xd8 0x64) wrapping int 0; not allow-listed.",
+    "input_hex": "d86400",
+    "expected_verdict": "reject",
+    "expected_reason": "UNKNOWN_TAG"
+  },
+  {
+    "id": "unknown-tag-55799-self-describe",
+    "rule": "UNKNOWN_TAG",
+    "rationale": "Tag 55799 (CBOR self-describe magic, 2-byte form 0xd9d9f7) wrapping int 0; not allow-listed.",
+    "input_hex": "d9d9f700",
+    "expected_verdict": "reject",
+    "expected_reason": "UNKNOWN_TAG"
   }
 ]

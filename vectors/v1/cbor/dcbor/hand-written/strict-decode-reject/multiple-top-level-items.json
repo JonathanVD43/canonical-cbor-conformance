@@ -6,5 +6,45 @@
     "input_hex": "0001",
     "expected_verdict": "reject",
     "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
+  },
+  {
+    "id": "multiple-top-level-items-int-then-map",
+    "rule": "MULTIPLE_TOP_LEVEL_ITEMS",
+    "rationale": "Two complete top-level items: int 0 (0x00) then empty map (0xa0).",
+    "input_hex": "00a0",
+    "expected_verdict": "reject",
+    "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
+  },
+  {
+    "id": "multiple-top-level-items-text-then-int",
+    "rule": "MULTIPLE_TOP_LEVEL_ITEMS",
+    "rationale": "Two complete top-level items: text \"a\" (0x6161) then int 1 (0x01).",
+    "input_hex": "616101",
+    "expected_verdict": "reject",
+    "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
+  },
+  {
+    "id": "multiple-top-level-items-array-then-int",
+    "rule": "MULTIPLE_TOP_LEVEL_ITEMS",
+    "rationale": "Two complete top-level items: array [0] (0x8100) then int 1 (0x01).",
+    "input_hex": "810001",
+    "expected_verdict": "reject",
+    "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
+  },
+  {
+    "id": "multiple-top-level-items-two-maps",
+    "rule": "MULTIPLE_TOP_LEVEL_ITEMS",
+    "rationale": "Two complete top-level items: two empty maps (0xa0 0xa0).",
+    "input_hex": "a0a0",
+    "expected_verdict": "reject",
+    "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
+  },
+  {
+    "id": "multiple-top-level-items-bool-then-null",
+    "rule": "MULTIPLE_TOP_LEVEL_ITEMS",
+    "rationale": "Two complete top-level items: true (0xf5) then null (0xf6).",
+    "input_hex": "f5f6",
+    "expected_verdict": "reject",
+    "expected_reason": "MULTIPLE_TOP_LEVEL_ITEMS"
   }
 ]

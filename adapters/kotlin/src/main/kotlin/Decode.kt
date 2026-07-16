@@ -12,10 +12,10 @@ import java.text.Normalizer
 // additional-info width was used, raw NaN payload bits, raw map-key byte
 // order.
 //
-// Known scope gap, matching adapters/rust/src/decode.rs: a tag-2/3 (bignum)
-// item whose magnitude fits the native 64-bit range is not rejected here --
-// none of the 11 documented decode-strict reason codes covers it and no
-// vector in the corpus exercises it.
+// Bignum rule (SPEC.md), matching adapters/rust/src/decode.rs: a tag-2/3
+// (bignum) item is rejected with NON_CANONICAL_BIGNUM if its magnitude fits
+// the native 64-bit range or its byte-string payload is non-minimal (a
+// leading zero byte). A genuinely canonical bignum still ACCEPTs.
 
 enum class Profile { RFC8949, DCBOR }
 
@@ -33,6 +33,7 @@ private val REASON_CODES = setOf(
     "UNKNOWN_TAG",
     "NON_NFC_STRING",
     "UNREDUCED_NUMERIC",
+    "NON_CANONICAL_BIGNUM",
 )
 
 // Placeholder allow-list for the UNKNOWN_TAG check: only the bignum tags are
@@ -238,6 +239,17 @@ private fun parseItem(input: ByteArray, cursor: Cursor, profile: Profile): Item 
             val tag = head.arg
             if (tag !in ALLOWED_TAGS) throw DecodeException("UNKNOWN_TAG")
             val inner = parseItem(input, cursor, profile)
+            // Bignum rule: a tag 2/3 payload must be the minimal big-endian
+            // encoding of a magnitude >= 2^64. Reject if the magnitude fits
+            // the native 64-bit range (a <= 8-byte payload always does, once
+            // the leading-zero case is ruled out) or the payload is non-minimal
+            // (non-empty with a leading zero byte).
+            if ((tag == 2uL || tag == 3uL) && inner is Item.Bytes) {
+                val b = inner.v
+                if ((b.isNotEmpty() && b[0].toInt() == 0) || b.size <= 8) {
+                    throw DecodeException("NON_CANONICAL_BIGNUM")
+                }
+            }
             Item.TaggedItem(tag, inner)
         }
         else -> throw IllegalStateException("major type is 3 bits, always 0-7")

@@ -60,5 +60,101 @@
       ]
     },
     "expected_hex": "a21903e8023701"
+  },
+  {
+    "id": "dcbor-map-mixed-int-widths-and-negatives",
+    "rule": "D3",
+    "rationale": "Ten integer keys spanning every encoded width plus three negative-integer widths, in one map. Verified byte-identical to the rfc8949 profile's equivalent vector -- plain integers trigger no D5/D7 transform, so D3's bytewise rule produces the same bytes as P2's here. Verified byte-identical across Rust, Go, and Python's independent encoders.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "1"}],
+        [{"type": "int", "value": "23"}, {"type": "int", "value": "2"}],
+        [{"type": "int", "value": "24"}, {"type": "int", "value": "3"}],
+        [{"type": "int", "value": "255"}, {"type": "int", "value": "4"}],
+        [{"type": "int", "value": "256"}, {"type": "int", "value": "5"}],
+        [{"type": "int", "value": "65535"}, {"type": "int", "value": "6"}],
+        [{"type": "int", "value": "65536"}, {"type": "int", "value": "7"}],
+        [{"type": "int", "value": "-1"}, {"type": "int", "value": "8"}],
+        [{"type": "int", "value": "-100"}, {"type": "int", "value": "9"}],
+        [{"type": "int", "value": "-1000"}, {"type": "int", "value": "10"}]
+      ]
+    },
+    "expected_hex": "aa0001170218180318ff041901000519ffff061a000100000720083863093903e70a"
+  },
+  {
+    "id": "dcbor-map-empty-and-nonempty-string-keys",
+    "rule": "D3",
+    "rationale": "Empty byte string, empty text string, a 1-byte byte-string key, a 1-char text key, and a long ASCII text key together in one map. Plain ASCII text is already NFC-normalized, so D8 applies no transform here and the bytes match the rfc8949 equivalent exactly.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "bytes", "value": ""}, {"type": "int", "value": "1"}],
+        [{"type": "text", "value": ""}, {"type": "int", "value": "2"}],
+        [{"type": "bytes", "value": "01"}, {"type": "int", "value": "3"}],
+        [{"type": "text", "value": "a"}, {"type": "int", "value": "4"}],
+        [{"type": "text", "value": "a much longer text string key that pushes past the one-byte length extension boundary of twenty three characters"}, {"type": "int", "value": "5"}]
+      ]
+    },
+    "expected_hex": "a540014101036002616104787061206d756368206c6f6e676572207465787420737472696e67206b6579207468617420707573686573207061737420746865206f6e652d62797465206c656e67746820657874656e73696f6e20626f756e64617279206f66207477656e7479207468726565206368617261637465727305"
+  },
+  {
+    "id": "dcbor-map-tag-as-key",
+    "rule": "D3",
+    "rationale": "A tag-wrapped value (tag 2, decode-strict allow-listed) used as a map key alongside a plain int key. Same bytes as the rfc8949 equivalent -- the tag's payload here is a byte string, not a numeric value, so no D5/D7 reduction applies to it. Tag 2 wraps the minimal 9-byte magnitude 2^64 (0x010000000000000000) so it is a genuinely canonical bignum and survives decode-strict's NON_CANONICAL_BIGNUM check (a native-range magnitude like 0x01 would now be rejected under the bignum rule).",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "1"}],
+        [{"type": "tag", "tag": 2, "value": {"type": "bytes", "value": "010000000000000000"}}, {"type": "int", "value": "2"}]
+      ]
+    },
+    "expected_hex": "a20001c24901000000000000000002"
+  },
+  {
+    "id": "dcbor-map-nested-array-key",
+    "rule": "D3",
+    "rationale": "Array values used as map keys, sorted correctly against each other and a plain int key -- major type 4 sorts after int/negative-int/bytes/text under D3, same major-type ordering as P2.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "array", "items": [{"type": "int", "value": "1"}]}, {"type": "int", "value": "1"}],
+        [{"type": "array", "items": [{"type": "int", "value": "2"}]}, {"type": "int", "value": "2"}],
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "3"}]
+      ]
+    },
+    "expected_hex": "a30003810101810202"
+  },
+  {
+    "id": "dcbor-map-nested-map-key",
+    "rule": "D3",
+    "rationale": "A map value used as a map key, alongside an int and a text key -- major type 5 sorts after array and before tag under D3, same ordering as P2.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "map", "entries": [[{"type": "int", "value": "1"}, {"type": "int", "value": "1"}]]}, {"type": "int", "value": "1"}],
+        [{"type": "int", "value": "0"}, {"type": "int", "value": "2"}],
+        [{"type": "text", "value": "x"}, {"type": "int", "value": "3"}]
+      ]
+    },
+    "expected_hex": "a30002617803a1010101"
+  },
+  {
+    "id": "dcbor-map-cross-major-type-mix",
+    "rule": "D3",
+    "rationale": "Seven keys spanning six of the seven CBOR major types (int, negative-int, bytes, text, array, map, tag) in one map -- broadest single cross-major-type ordering exercise, confirming D3 holds across the full type range at once. The tag key wraps the minimal 9-byte magnitude 2^64 (0x010000000000000000) so it is a genuinely canonical bignum and survives decode-strict's NON_CANONICAL_BIGNUM check; its leading 0xc2 byte still sorts it last among the seven keys regardless of payload length.",
+    "logical_value": {
+      "type": "map",
+      "entries": [
+        [{"type": "int", "value": "5"}, {"type": "int", "value": "1"}],
+        [{"type": "int", "value": "-5"}, {"type": "int", "value": "2"}],
+        [{"type": "bytes", "value": "aa"}, {"type": "int", "value": "3"}],
+        [{"type": "text", "value": "k"}, {"type": "int", "value": "4"}],
+        [{"type": "array", "items": [{"type": "int", "value": "1"}]}, {"type": "int", "value": "5"}],
+        [{"type": "map", "entries": [[{"type": "int", "value": "1"}, {"type": "int", "value": "1"}]]}, {"type": "int", "value": "6"}],
+        [{"type": "tag", "tag": 2, "value": {"type": "bytes", "value": "010000000000000000"}}, {"type": "int", "value": "7"}]
+      ]
+    },
+    "expected_hex": "a70501240241aa03616b04810105a1010106c24901000000000000000007"
   }
 ]

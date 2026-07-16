@@ -17,10 +17,11 @@ import (
 // additional-info width was used, raw NaN payload bits, raw map-key byte
 // order.
 //
-// Known scope gap, matching the Rust/Kotlin/TypeScript adapters: a tag-2/3
-// (bignum) item whose magnitude fits the native 64-bit range is not rejected
-// here -- none of the 11 documented decode-strict reason codes covers it and
-// no vector in the corpus exercises it.
+// Bignum rule (SPEC.md), matching the Rust/Kotlin/TypeScript adapters: a
+// tag-2/3 (bignum) item is rejected with NON_CANONICAL_BIGNUM if its
+// magnitude fits the native 64-bit range or its byte-string payload is
+// non-minimal (a leading zero byte). A genuinely canonical bignum still
+// ACCEPTs.
 
 type Profile int
 
@@ -56,6 +57,7 @@ var reasonCodes = map[string]bool{
 	"UNKNOWN_TAG":              true,
 	"NON_NFC_STRING":           true,
 	"UNREDUCED_NUMERIC":        true,
+	"NON_CANONICAL_BIGNUM":     true,
 }
 
 // allowedTags is the UNKNOWN_TAG allow-list: only the bignum tags are
@@ -356,6 +358,18 @@ func parseItem(input []byte, c *cursor, profile Profile) (item, error) {
 		inner, err := parseItem(input, c, profile)
 		if err != nil {
 			return nil, err
+		}
+		// Bignum rule: a tag 2/3 payload must be the minimal big-endian
+		// encoding of a magnitude >= 2^64. Reject if the magnitude fits the
+		// native 64-bit range (a <= 8-byte payload always does, once the
+		// leading-zero case is ruled out) or the payload is non-minimal
+		// (non-empty with a leading zero byte).
+		if tag == 2 || tag == 3 {
+			if b, ok := inner.(itemBytes); ok {
+				if (len(b.v) >= 1 && b.v[0] == 0) || len(b.v) <= 8 {
+					return nil, decodeReject("NON_CANONICAL_BIGNUM")
+				}
+			}
 		}
 		return itemTagged{tag: tag, inner: inner}, nil
 	default:

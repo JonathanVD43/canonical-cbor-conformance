@@ -8,12 +8,11 @@
 // raw map-key byte order. So this parser is hand-rolled instead of wrapping
 // an existing decoder.
 //
-// Known scope gap: a tag-2/3 (bignum) item whose magnitude fits the native
-// 64-bit range (and so should have been a plain int, per SPEC.md's bignum
-// rule) is not rejected here -- none of the 11 documented decode-strict
-// reason codes covers "bignum tag used below native range" and no vector in
-// the corpus exercises it. Such input round-trips as a plain tag+bytestring
-// passthrough instead.
+// Bignum rule (SPEC.md): a tag-2/3 (bignum) item is rejected with
+// NON_CANONICAL_BIGNUM if its magnitude fits the native 64-bit range (should
+// have been a plain int) or its byte-string payload is non-minimal (a leading
+// zero byte). A genuinely canonical bignum (magnitude >= 2^64, minimal
+// big-endian bytes) still ACCEPTs and re-encodes byte-identical.
 
 use unicode_normalization::UnicodeNormalization;
 
@@ -46,6 +45,7 @@ const REASON_CODES: &[&str] = &[
     "UNKNOWN_TAG",
     "NON_NFC_STRING",
     "UNREDUCED_NUMERIC",
+    "NON_CANONICAL_BIGNUM",
 ];
 
 fn as_reason(err: &str) -> Option<&'static str> {
@@ -277,6 +277,20 @@ fn parse_item(input: &[u8], pos: &mut usize, profile: Profile) -> Result<Item, S
                 return Err("UNKNOWN_TAG".to_string());
             }
             let inner = parse_item(input, pos, profile)?;
+            // Bignum rule: a tag 2/3 payload must be the minimal big-endian
+            // encoding of a magnitude >= 2^64. Reject if (a) the magnitude
+            // fits the native 64-bit range -- a <= 8-byte payload always
+            // does, once (b) is ruled out -- or (b) the payload is non-minimal
+            // (non-empty with a leading zero byte). Any more-specific
+            // violation inside the payload is already caught during the
+            // parse_item descent above.
+            if tag == 2 || tag == 3 {
+                if let Item::Bytes(b) = &inner {
+                    if (!b.is_empty() && b[0] == 0) || b.len() <= 8 {
+                        return Err("NON_CANONICAL_BIGNUM".to_string());
+                    }
+                }
+            }
             Ok(Item::Tag(tag, Box::new(inner)))
         }
         _ => unreachable!("major type is 3 bits, always 0-7"),
@@ -468,6 +482,24 @@ mod tests {
     fn unknown_tag() {
         assert_eq!(reject_hex("d903e700", Profile::Rfc8949), "UNKNOWN_TAG");
         assert_eq!(reject_hex("d903e700", Profile::Dcbor), "UNKNOWN_TAG");
+    }
+
+    #[test]
+    fn non_canonical_bignum() {
+        // (a) magnitude fits native range: tag 2 wrapping magnitude 1.
+        assert_eq!(reject_hex("c24101", Profile::Rfc8949), "NON_CANONICAL_BIGNUM");
+        assert_eq!(reject_hex("c24101", Profile::Dcbor), "NON_CANONICAL_BIGNUM");
+        // (a) exact boundary: tag 2 wrapping 2^64-1 (8-byte all-ones).
+        assert_eq!(reject_hex("c248ffffffffffffffff", Profile::Rfc8949), "NON_CANONICAL_BIGNUM");
+        // (b) non-minimal length: tag 2 wrapping 2^64 with a leading zero byte.
+        assert_eq!(reject_hex("c24a00010000000000000000", Profile::Rfc8949), "NON_CANONICAL_BIGNUM");
+        // tag 3 negative equivalents.
+        assert_eq!(reject_hex("c34101", Profile::Dcbor), "NON_CANONICAL_BIGNUM");
+        assert_eq!(reject_hex("c34a00010000000000000000", Profile::Rfc8949), "NON_CANONICAL_BIGNUM");
+        // Genuinely canonical bignums (magnitude >= 2^64, minimal) still ACCEPT.
+        assert_eq!(accept_hex("c249010000000000000000", Profile::Rfc8949), hex_decode("c249010000000000000000").unwrap());
+        assert_eq!(accept_hex("c250ffffffffffffffffffffffffffffffff", Profile::Dcbor), hex_decode("c250ffffffffffffffffffffffffffffffff").unwrap());
+        assert_eq!(accept_hex("c349010000000000000000", Profile::Rfc8949), hex_decode("c349010000000000000000").unwrap());
     }
 
     #[test]

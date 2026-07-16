@@ -6,5 +6,45 @@
     "input_hex": "a200000001",
     "expected_verdict": "reject",
     "expected_reason": "DUPLICATE_KEY"
+  },
+  {
+    "id": "duplicate-keys-text-keys",
+    "rule": "DUPLICATE_KEY",
+    "rationale": "Map {\"a\":0, \"a\":1} with the text key \"a\" appearing twice.",
+    "input_hex": "a2616100616101",
+    "expected_verdict": "reject",
+    "expected_reason": "DUPLICATE_KEY"
+  },
+  {
+    "id": "duplicate-keys-byte-string-keys",
+    "rule": "DUPLICATE_KEY",
+    "rationale": "Map {h'01':0, h'01':1} with the byte-string key h'01' appearing twice.",
+    "input_hex": "a2410100410101",
+    "expected_verdict": "reject",
+    "expected_reason": "DUPLICATE_KEY"
+  },
+  {
+    "id": "duplicate-keys-negative-int-keys",
+    "rule": "DUPLICATE_KEY",
+    "rationale": "Map {-1:0, -1:1} with the negative-integer key -1 appearing twice.",
+    "input_hex": "a220002001",
+    "expected_verdict": "reject",
+    "expected_reason": "DUPLICATE_KEY"
+  },
+  {
+    "id": "duplicate-keys-array-keys",
+    "rule": "DUPLICATE_KEY",
+    "rationale": "Map {[1]:0, [1]:1} with the structurally identical array key [1] appearing twice.",
+    "input_hex": "a2810100810101",
+    "expected_verdict": "reject",
+    "expected_reason": "DUPLICATE_KEY"
+  },
+  {
+    "id": "duplicate-keys-non-adjacent-value",
+    "rule": "DUPLICATE_KEY",
+    "rationale": "Map {0:0, 0:1, 1:2}: the duplicate key 0 is adjacent and keys stay sorted (0,0,1), isolating the duplicate from any ordering violation.",
+    "input_hex": "a3000000010102",
+    "expected_verdict": "reject",
+    "expected_reason": "DUPLICATE_KEY"
   }
 ]

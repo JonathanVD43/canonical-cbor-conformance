@@ -6,5 +6,45 @@
     "input_hex": "0018",
     "expected_verdict": "reject",
     "expected_reason": "TRAILING_BYTES"
+  },
+  {
+    "id": "trailing-bytes-after-byte-string",
+    "rule": "TRAILING_BYTES",
+    "rationale": "Canonical byte string h'01' (0x4101) followed by a stray 0x18 header byte (an incomplete item, not a second complete one).",
+    "input_hex": "410118",
+    "expected_verdict": "reject",
+    "expected_reason": "TRAILING_BYTES"
+  },
+  {
+    "id": "trailing-bytes-after-text-string",
+    "rule": "TRAILING_BYTES",
+    "rationale": "Canonical text \"a\" (0x6161) followed by a stray incomplete 0x18 header byte.",
+    "input_hex": "616118",
+    "expected_verdict": "reject",
+    "expected_reason": "TRAILING_BYTES"
+  },
+  {
+    "id": "trailing-bytes-after-array",
+    "rule": "TRAILING_BYTES",
+    "rationale": "Canonical array [0] (0x8100) followed by a stray incomplete 0x18 header byte.",
+    "input_hex": "810018",
+    "expected_verdict": "reject",
+    "expected_reason": "TRAILING_BYTES"
+  },
+  {
+    "id": "trailing-bytes-after-map",
+    "rule": "TRAILING_BYTES",
+    "rationale": "Canonical map {0:0} (0xa10000) followed by a stray incomplete 0x18 header byte.",
+    "input_hex": "a1000018",
+    "expected_verdict": "reject",
+    "expected_reason": "TRAILING_BYTES"
+  },
+  {
+    "id": "trailing-bytes-after-float",
+    "rule": "TRAILING_BYTES",
+    "rationale": "Canonical float 2.5 (0xf94100) followed by a stray incomplete 0x18 header byte.",
+    "input_hex": "f9410018",
+    "expected_verdict": "reject",
+    "expected_reason": "TRAILING_BYTES"
   }
 ]

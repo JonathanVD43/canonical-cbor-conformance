@@ -6,5 +6,45 @@
     "input_hex": "f97e01",
     "expected_verdict": "reject",
     "expected_reason": "NAN_PAYLOAD_VARIANT"
+  },
+  {
+    "id": "nan-payload-variant-f16-signaling",
+    "rule": "NAN_PAYLOAD_VARIANT",
+    "rationale": "Half-precision signaling NaN (0x7c01: quiet bit clear, mantissa 1) instead of the canonical quiet 0x7e00.",
+    "input_hex": "f97c01",
+    "expected_verdict": "reject",
+    "expected_reason": "NAN_PAYLOAD_VARIANT"
+  },
+  {
+    "id": "nan-payload-variant-f16-alt-quiet",
+    "rule": "NAN_PAYLOAD_VARIANT",
+    "rationale": "Half-precision quiet NaN with a full non-zero mantissa payload (0x7fff) instead of the canonical 0x7e00.",
+    "input_hex": "f97fff",
+    "expected_verdict": "reject",
+    "expected_reason": "NAN_PAYLOAD_VARIANT"
+  },
+  {
+    "id": "nan-payload-variant-f32",
+    "rule": "NAN_PAYLOAD_VARIANT",
+    "rationale": "Single-precision quiet NaN (0x7fc00000); any NaN must canonicalize to f16 0xf97e00 regardless of width.",
+    "input_hex": "fa7fc00000",
+    "expected_verdict": "reject",
+    "expected_reason": "NAN_PAYLOAD_VARIANT"
+  },
+  {
+    "id": "nan-payload-variant-f64",
+    "rule": "NAN_PAYLOAD_VARIANT",
+    "rationale": "Double-precision quiet NaN (0x7ff8000000000000); must canonicalize to f16 0xf97e00.",
+    "input_hex": "fb7ff8000000000000",
+    "expected_verdict": "reject",
+    "expected_reason": "NAN_PAYLOAD_VARIANT"
+  },
+  {
+    "id": "nan-payload-variant-f32-signaling",
+    "rule": "NAN_PAYLOAD_VARIANT",
+    "rationale": "Single-precision signaling NaN (0x7f800001).",
+    "input_hex": "fa7f800001",
+    "expected_verdict": "reject",
+    "expected_reason": "NAN_PAYLOAD_VARIANT"
   }
 ]

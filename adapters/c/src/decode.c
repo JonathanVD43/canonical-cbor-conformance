@@ -556,6 +556,20 @@ static Item *parse_item(Cursor *c, Profile profile, const char **reject_reason) 
             }
             Item *inner = parse_item(c, profile, reject_reason);
             if (!inner) return NULL;
+            /* Bignum rule: a tag 2/3 payload must be the minimal big-endian
+             * encoding of a magnitude >= 2^64. Reject if the magnitude fits
+             * the native 64-bit range (a <= 8-byte payload always does, once
+             * the leading-zero case is ruled out) or the payload is
+             * non-minimal (non-empty with a leading zero byte). */
+            if ((tag == 2 || tag == 3) && inner->type == ITEM_BYTES) {
+                size_t blen = inner->as.bytesv.len;
+                const uint8_t *bp = inner->as.bytesv.bytes;
+                if ((blen >= 1 && bp[0] == 0) || blen <= 8) {
+                    free_item(inner);
+                    *reject_reason = "NON_CANONICAL_BIGNUM";
+                    return NULL;
+                }
+            }
             Item *it = alloc_item(ITEM_TAGGED);
             it->as.tagged.tag = tag;
             it->as.tagged.inner = inner;

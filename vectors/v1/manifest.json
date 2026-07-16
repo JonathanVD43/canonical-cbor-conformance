@@ -1,7 +1,7 @@
 {
   "profile_versions": {
-    "rfc8949": "rfc8949-profile-1",
-    "dcbor": "dcbor-profile-draft-04"
+    "rfc8949": "rfc8949-profile-2",
+    "dcbor": "dcbor-profile-draft-05"
   },
   "hand_written_files": {
     "rfc8949": [
@@ -14,7 +14,8 @@
       "vectors/v1/cbor/dcbor/hand-written/numeric-reduction.json",
       "vectors/v1/cbor/dcbor/hand-written/zero-unification.json",
       "vectors/v1/cbor/dcbor/hand-written/nfc-normalization.json",
-      "vectors/v1/cbor/dcbor/hand-written/maps-key-order.json"
+      "vectors/v1/cbor/dcbor/hand-written/maps-key-order.json",
+      "vectors/v1/cbor/dcbor/hand-written/bignums.json"
     ]
   },
   "fuzz_generated_files": {
@@ -35,7 +36,8 @@
       "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/nan-payload-variant.json",
       "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/trailing-bytes.json",
       "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/multiple-top-level-items.json",
-      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/unknown-tag.json"
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/unknown-tag.json",
+      "vectors/v1/cbor/rfc8949/hand-written/strict-decode-reject/non-canonical-bignum.json"
     ],
     "dcbor": [
       "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/non-shortest-int.json",
@@ -48,14 +50,15 @@
       "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/multiple-top-level-items.json",
       "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/unknown-tag.json",
       "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/non-nfc-string.json",
-      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/unreduced-numeric.json"
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/unreduced-numeric.json",
+      "vectors/v1/cbor/dcbor/hand-written/strict-decode-reject/non-canonical-bignum.json"
     ]
   },
   "corpus_stats": {
-    "rfc8949_hand_written_count": 14,
-    "dcbor_hand_written_count": 9,
-    "rfc8949_strict_decode_reject_count": 9,
-    "dcbor_strict_decode_reject_count": 11,
+    "rfc8949_hand_written_count": 34,
+    "dcbor_hand_written_count": 24,
+    "rfc8949_strict_decode_reject_count": 60,
+    "dcbor_strict_decode_reject_count": 72,
     "rfc8949_fuzz_generated_count": 5000,
     "dcbor_fuzz_generated_count": 5000
   }

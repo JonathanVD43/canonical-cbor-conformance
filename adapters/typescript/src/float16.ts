@@ -91,8 +91,16 @@ export function f16BitsToDouble(bits: number): number {
   }
 
   if (exp === 0n) {
-    // Subnormal.
-    let expAdj = -1n;
+    // Subnormal. Normalize the 10-bit subnormal significand by
+    // left-shifting until its leading set bit reaches position 10 (the
+    // implicit-bit position), counting shifts via expAdj. expAdj MUST
+    // start at 1, not -1: for the smallest subnormal (man=1, true value
+    // 2^-24), exactly 10 shifts are needed to reach manAdj=0x400, and the
+    // final double exponent must come out to 1023-24=999. That only holds
+    // if expAdj lands on 1-10=-9 (giving 1008+(-9)=999); a -1 starting
+    // point yields -11, undercounting by 2 and silently quartering the
+    // reconstructed magnitude of every subnormal f16 value.
+    let expAdj = 1n;
     let manAdj = man;
     while ((manAdj & 0x400n) === 0n) {
       manAdj = manAdj << 1n;

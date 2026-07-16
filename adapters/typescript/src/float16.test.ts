@@ -71,6 +71,24 @@ test("overflow rounds to infinity", () => {
   assert.strictEqual(doubleToF16Bits(65520.0), bits("7c00"));
 });
 
+test("subnormal exhaustive round-trip", () => {
+  // Regression test for a found-and-fixed bug: f16BitsToDouble's subnormal
+  // branch used to start expAdj at -1 instead of 1, undercounting the
+  // normalization shift by 2 and silently quartering the magnitude of
+  // every subnormal f16 value on decode. No existing vector exercised
+  // this (only the encode direction was covered by "smallest normal and
+  // subnormal boundary" above); the identical bug was already found and
+  // fixed in this project's C/Go/Python/Java adapters, but TypeScript
+  // and Kotlin were never checked -- caught only when this project's own
+  // real CI run failed on the newly-added float-f16-smallest-subnormal
+  // vector.
+  for (let bits = 0; bits <= 0x03ff; bits++) {
+    const got = f16BitsToDouble(bits);
+    const want = bits * Math.pow(2, -24);
+    assert.strictEqual(got, want, `bits=0x${bits.toString(16).padStart(4, "0")}`);
+  }
+});
+
 test("f32 round-trip", () => {
   const b = tryF32(2.5);
   assert.ok(b !== null, "tryF32(2.5) should not be null");

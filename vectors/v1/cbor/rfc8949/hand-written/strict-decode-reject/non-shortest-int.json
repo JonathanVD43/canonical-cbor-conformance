@@ -6,5 +6,45 @@
     "input_hex": "1800",
     "expected_verdict": "reject",
     "expected_reason": "NON_SHORTEST_INT"
+  },
+  {
+    "id": "non-shortest-int-zero-2byte",
+    "rule": "NON_SHORTEST_INT",
+    "rationale": "Integer 0 in the 2-byte (0x19) form instead of single-byte 0x00.",
+    "input_hex": "190000",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_INT"
+  },
+  {
+    "id": "non-shortest-int-23-1byte",
+    "rule": "NON_SHORTEST_INT",
+    "rationale": "Integer 23 in the 1-byte extension form (0x18 0x17); 23 must be the immediate 0x17 (max immediate value).",
+    "input_hex": "1817",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_INT"
+  },
+  {
+    "id": "non-shortest-int-256-4byte",
+    "rule": "NON_SHORTEST_INT",
+    "rationale": "Integer 256 in the 4-byte (0x1a) form; it fits the 2-byte form 0x19 0x0100.",
+    "input_hex": "1a00000100",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_INT"
+  },
+  {
+    "id": "non-shortest-int-neg1-1byte",
+    "rule": "NON_SHORTEST_INT",
+    "rationale": "Negative integer -1 (major type 1) in the 1-byte extension form (0x38 0x00) instead of the immediate 0x20.",
+    "input_hex": "3800",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_INT"
+  },
+  {
+    "id": "non-shortest-int-neg65536-4byte",
+    "rule": "NON_SHORTEST_INT",
+    "rationale": "Negative integer -65536 (major type 1, arg 65535) in the 4-byte form; it fits the 2-byte form 0x39 0xffff.",
+    "input_hex": "3a0000ffff",
+    "expected_verdict": "reject",
+    "expected_reason": "NON_SHORTEST_INT"
   }
 ]
